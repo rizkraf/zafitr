@@ -61,12 +61,12 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, account, user }) {
       // Persist the OAuth access_token and or the user id to the token right after signin
       if (account) {
-        token.id = user.id
-        token.name = user.name
-        token.username = user.username
-        token.role = user.role
+        token.id = user.id;
+        token.name = user.name;
+        token.username = user.username;
+        token.role = user.role;
       }
-      return token
+      return token;
     },
     session: ({ session, token }) => ({
       ...session,
@@ -78,9 +78,20 @@ export const authOptions: NextAuthOptions = {
         role: token.role,
       },
     }),
+    async redirect({ url, baseUrl }) {
+      // Allows relative callback URLs
+      if (url.startsWith("/")) return `${baseUrl}${url}`;
+      // Allows callback URLs on the same origin
+      else if (new URL(url).origin === baseUrl) return url;
+      return baseUrl;
+    },
+  },
+  pages: {
+    signIn: "/login",
   },
   secret: env.NEXTAUTH_SECRET,
   adapter: PrismaAdapter(db) as Adapter,
+  debug: env.NODE_ENV === "development",
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -89,24 +100,35 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
+        if (!credentials?.username || !credentials?.password) {
+          throw new Error("Nama pengguna dan kata sandi harus diisi");
+        }
+
         const user = await db.user.findFirst({
           where: {
-            username: credentials?.username,
+        username: credentials.username,
           },
         });
 
-        if (user && credentials?.password) {
-          const isValidPassword = await bcrypt.compare(credentials.password, user.password as string);
-          if (isValidPassword) {
-            return {
-              id: user.id,
-              name: user.name!,
-              username: user.username as string,
-              role: user.role as UserRole,
-            };
-          }
+        if (!user) {
+          throw new Error("Tidak ditemukan pengguna dengan nama pengguna tersebut");
         }
-        return null;
+
+        const isValidPassword = await bcrypt.compare(
+          credentials.password,
+          user.password as string,
+        );
+
+        if (!isValidPassword) {
+          throw new Error("Kata sandi yang dimasukkan salah");
+        }
+
+        return {
+          id: user.id,
+          name: user.name!,
+          username: user.username as string,
+          role: user.role as UserRole,
+        };
       },
     }),
     /**
