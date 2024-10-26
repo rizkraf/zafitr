@@ -6,10 +6,16 @@ import {
   type NextAuthOptions,
 } from "next-auth";
 import { type Adapter } from "next-auth/adapters";
-import DiscordProvider from "next-auth/providers/discord";
+import CredentialsProvider from "next-auth/providers/credentials";
 
 import { env } from "~/env";
 import { db } from "~/server/db";
+import bcrypt from "bcrypt";
+
+enum UserRole {
+  PETUGAS = "PETUGAS",
+  ADMIN = "ADMIN",
+}
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -21,15 +27,25 @@ declare module "next-auth" {
   interface Session extends DefaultSession {
     user: DefaultSession["user"] & {
       id: string;
-      // ...other properties
-      // role: UserRole;
+      name: string;
+      username: string;
+      role: UserRole;
     };
   }
 
-  // interface User {
-  //   // ...other properties
-  //   // role: UserRole;
-  // }
+  interface User {
+    id: string;
+    name: string;
+    username: string;
+    role: UserRole;
+  }
+
+  interface JWT {
+    id: string;
+    name: string;
+    username: string;
+    role: UserRole;
+  }
 }
 
 /**
@@ -38,20 +54,59 @@ declare module "next-auth" {
  * @see https://next-auth.js.org/configuration/options
  */
 export const authOptions: NextAuthOptions = {
+  session: {
+    strategy: "jwt",
+  },
   callbacks: {
-    session: ({ session, user }) => ({
+    async jwt({ token, account, user }) {
+      // Persist the OAuth access_token and or the user id to the token right after signin
+      if (account) {
+        token.id = user.id
+        token.name = user.name
+        token.username = user.username
+        token.role = user.role
+      }
+      return token
+    },
+    session: ({ session, token }) => ({
       ...session,
       user: {
         ...session.user,
-        id: user.id,
+        id: token.sub,
+        name: token.name,
+        username: token.username,
+        role: token.role,
       },
     }),
   },
   adapter: PrismaAdapter(db) as Adapter,
   providers: [
-    DiscordProvider({
-      clientId: env.DISCORD_CLIENT_ID,
-      clientSecret: env.DISCORD_CLIENT_SECRET,
+    CredentialsProvider({
+      name: "Credentials",
+      credentials: {
+        username: { label: "Username", type: "text" },
+        password: { label: "Password", type: "password" },
+      },
+      async authorize(credentials) {
+        const user = await db.user.findFirst({
+          where: {
+            username: credentials?.username,
+          },
+        });
+
+        if (user && credentials?.password) {
+          const isValidPassword = await bcrypt.compare(credentials.password, user.password as string);
+          if (isValidPassword) {
+            return {
+              id: user.id,
+              name: user.name!,
+              username: user.username as string,
+              role: user.role as UserRole,
+            };
+          }
+        }
+        return null;
+      },
     }),
     /**
      * ...add more providers here.
