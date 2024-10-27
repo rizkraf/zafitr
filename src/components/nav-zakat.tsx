@@ -3,6 +3,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   SidebarGroup,
+  SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -21,6 +22,7 @@ export function NavZakat({
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
+      <SidebarGroupLabel>Zakat</SidebarGroupLabel>
       <SidebarMenu>
         {zakats.map((item) => (
           <SidebarMenuItem key={item.title}>

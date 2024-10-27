@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 
 import {
   SidebarGroup,
+  SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -24,15 +25,19 @@ export function NavMain({
       url: string;
     }[];
   }[];
-  }) {
-    const pathname = usePathname()
+}) {
+  const pathname = usePathname();
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
       <SidebarMenu>
         {items.map((item) => (
           <SidebarMenuItem key={item.title}>
-            <SidebarMenuButton asChild tooltip={item.title} isActive={pathname === item.url}>
+            <SidebarMenuButton
+              asChild
+              tooltip={item.title}
+              isActive={pathname === item.url}
+            >
               <Link href={item.url}>
                 <item.icon />
                 <span>{item.title}</span>

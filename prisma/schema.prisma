@@ -42,33 +42,38 @@ model User {
 }
 
 model Muzakki {
-    id        String   @id @default(cuid())
-    name      String
-    email     String?
-    phone     String?
-    address   String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    id                String   @id @default(cuid())
+    name              String
+    muzakkiCategoryId String
+    email             String?
+    phone             String?
+    address           String
+    createdAt         DateTime @default(now())
+    updatedAt         DateTime @updatedAt
 
-    zakatRecords ZakatRecord[]
+    zakatRecords    ZakatRecord[]
+    muzakkiCategory MuzakkiCategory @relation(fields: [muzakkiCategoryId], references: [id])
 }
 
 model Mustahik {
-    id        String   @id @default(cuid())
-    name      String
-    email     String?
-    phone     String?
-    address   String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    id                 String   @id @default(cuid())
+    name               String
+    mustahikCategoryId String
+    email              String?
+    phone              String?
+    address            String
+    createdAt          DateTime @default(now())
+    updatedAt          DateTime @updatedAt
 
     zakatDistributions ZakatDistribution[]
+    mustahikCategory   MustahikCategory    @relation(fields: [mustahikCategoryId], references: [id])
 }
 
 model ZakatRecord {
     id           String   @id @default(cuid())
     userId       String
     muzakkiId    String
+    zakatPeriod  String
     amount       Float
     dateReceived DateTime
     createdAt    DateTime @default(now())
@@ -76,8 +81,9 @@ model ZakatRecord {
 
     zakatDistributions ZakatDistribution[]
 
-    user    User    @relation(fields: [userId], references: [id])
-    muzakki Muzakki @relation(fields: [muzakkiId], references: [id])
+    user    User        @relation(fields: [userId], references: [id])
+    muzakki Muzakki     @relation(fields: [muzakkiId], references: [id])
+    period  ZakatPeriod @relation(fields: [zakatPeriod], references: [id])
 }
 
 model ZakatDistribution {
@@ -91,4 +97,39 @@ model ZakatDistribution {
 
     mustahik    Mustahik    @relation(fields: [mustahikId], references: [id])
     zakatRecord ZakatRecord @relation(fields: [zakatRecordId], references: [id])
+}
+
+model MuzakkiCategory {
+    id        String   @id @default(cuid())
+    name      String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    muzakkis Muzakki[]
+}
+
+model MustahikCategory {
+    id        String   @id @default(cuid())
+    name      String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    mustahiks Mustahik[]
+}
+
+model ZakatPeriod {
+    id        String   @id @default(cuid())
+    name      String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    zakatRecords ZakatRecord[]
+}
+
+model ZakatUnit {
+    id        String   @id @default(cuid())
+    name      String
+    amount    Float
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 }

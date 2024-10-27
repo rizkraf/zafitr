@@ -17,8 +17,10 @@ import {
   TableRow,
 } from "~/components/ui/table";
 import { DataTablePagination } from "./data-table-pagination";
-import { useState, type Dispatch, type SetStateAction } from "react";
+import { type Dispatch, type SetStateAction } from "react";
 import { Input } from "~/components/ui/input";
+import { Button } from "./ui/button";
+import Link from "next/link";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -39,6 +41,7 @@ interface DataTableProps<TData, TValue> {
   search: string;
   setSearch: Dispatch<SetStateAction<string>>;
   searchPlaceholder: string;
+  buttons?: React.ReactNode;
 }
 
 export function DataTable<TData, TValue>({
@@ -52,6 +55,7 @@ export function DataTable<TData, TValue>({
   search,
   setSearch,
   searchPlaceholder,
+  buttons,
 }: DataTableProps<TData, TValue>) {
   const table = useReactTable({
     data,
@@ -70,13 +74,14 @@ export function DataTable<TData, TValue>({
 
   return (
     <div>
-      <div className="flex items-center py-4">
+      <div className="flex items-center justify-between py-4">
         <Input
           placeholder={searchPlaceholder}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="max-w-sm"
         />
+        {buttons}
       </div>
       <div className="rounded-md border">
         <Table>

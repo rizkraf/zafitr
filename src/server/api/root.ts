@@ -1,6 +1,7 @@
 import { postRouter } from "~/server/api/routers/post";
 import { createCallerFactory, createTRPCRouter } from "~/server/api/trpc";
 import { muzakkiRouter } from "~/server/api/routers/muzakki";
+import { muzakkiCategoryRouter } from "./routers/muzakki-category";
 
 /**
  * This is the primary router for your server.
@@ -10,6 +11,7 @@ import { muzakkiRouter } from "~/server/api/routers/muzakki";
 export const appRouter = createTRPCRouter({
   post: postRouter,
   muzakki: muzakkiRouter,
+  muzakkiCategory: muzakkiCategoryRouter,
 });
 
 // export type definition of API

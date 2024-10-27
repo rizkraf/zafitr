@@ -1,13 +1,9 @@
 import { z } from "zod";
 
-import {
-  createTRPCRouter,
-  protectedProcedure,
-  publicProcedure,
-} from "~/server/api/trpc";
+import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 
 export const muzakkiRouter = createTRPCRouter({
-  list: protectedProcedure
+  getList: protectedProcedure
     .input(
       z.object({
         search: z.string().optional(),
@@ -55,13 +51,26 @@ export const muzakkiRouter = createTRPCRouter({
             },
           ],
         },
-        orderBy: input.sorting.map((sort) => ({
-          [sort.id]: sort.desc ? "desc" : "asc",
-        })),
+        orderBy: input.sorting.map((sort) => {
+          const [relation, field] = sort.id.split(".") as [string, string];
+          return field
+            ? { [relation]: { [field]: sort.desc ? "desc" : "asc" } }
+            : { [sort.id]: sort.desc ? "desc" : "asc" };
+        }),
         skip:
           ((input.pagination?.pageIndex ?? 1) - 1 + 1) * // Added +1 here
           (input.pagination?.pageSize ?? 10),
         take: input.pagination?.pageSize ?? 10,
+        select: {
+          id: true,
+          name: true,
+          muzakkiCategory: true,
+          email: true,
+          address: true,
+          phone: true,
+          createdAt: true,
+          updatedAt: true,
+        },
       });
 
       return {
@@ -73,6 +82,46 @@ export const muzakkiRouter = createTRPCRouter({
             (await ctx.db.muzakki.count()) / (input.pagination?.pageSize ?? 10),
           ),
         },
+      };
+    }),
+  create: protectedProcedure
+    .input(
+      z.object({
+        name: z.string().min(1),
+        muzakkiCategoryId: z.string().min(1),
+        email: z.union([
+          z.string().email({
+            message: "Email tidak valid",
+          }),
+          z.literal(""),
+        ]),
+        phone: z.string().optional(),
+        address: z.string().min(1),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const muzakki = await ctx.db.muzakki.create({
+        data: {
+          name: input.name,
+          muzakkiCategoryId: input.muzakkiCategoryId,
+          email: input.email,
+          phone: input.phone,
+          address: input.address,
+        },
+        select: {
+          id: true,
+          name: true,
+          muzakkiCategory: true,
+          email: true,
+          address: true,
+          phone: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+      });
+
+      return {
+        data: muzakki,
       };
     }),
 });

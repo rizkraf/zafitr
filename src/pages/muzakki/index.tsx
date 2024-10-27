@@ -17,6 +17,8 @@ import { columns } from "./columns";
 import { api } from "~/utils/api";
 import { type SortingState } from "@tanstack/react-table";
 import { useDebounce } from "use-debounce";
+import { Button } from "~/components/ui/button";
+import Link from "next/link";
 
 const Muzakki: NextPageWithLayout = () => {
   const [search, setSearch] = useState("");
@@ -29,11 +31,17 @@ const Muzakki: NextPageWithLayout = () => {
     pageSize: 10,
   });
 
-  const data = api.muzakki.list.useQuery({
+  const data = api.muzakki.getList.useQuery({
     pagination,
     search: searchDebounce,
     sorting,
   }).data;
+
+  const buttons = (
+    <Button asChild>
+      <Link href="/muzakki/add">Tambah Muzakki</Link>
+    </Button>
+  );
 
   return (
     <>
@@ -48,11 +56,13 @@ const Muzakki: NextPageWithLayout = () => {
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem className="hidden md:block">
-                <BreadcrumbLink href="#">Beranda</BreadcrumbLink>
+                <BreadcrumbLink asChild>
+                  <Link href="/">Beranda</Link>
+                </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator className="hidden md:block" />
               <BreadcrumbItem>
-                <BreadcrumbPage>Muzakki</BreadcrumbPage>
+                <BreadcrumbPage>Daftar Muzakki</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
@@ -74,6 +84,7 @@ const Muzakki: NextPageWithLayout = () => {
             search={search}
             setSearch={setSearch}
             searchPlaceholder="Cari Muzakki"
+            buttons={buttons}
           />
         </div>
       </div>
