@@ -1,4 +1,6 @@
 import { type LucideIcon } from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   SidebarGroup,
   SidebarMenu,
@@ -6,25 +8,27 @@ import {
   SidebarMenuItem,
 } from "~/components/ui/sidebar";
 
-export function NavProjects({
-  projects,
+export function NavZakat({
+  zakats,
 }: {
-  projects: {
+  zakats: {
     title: string;
     url: string;
     icon: LucideIcon;
   }[];
-}) {
+  }) {
+    const pathname = usePathname()
+
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
       <SidebarMenu>
-        {projects.map((item) => (
+        {zakats.map((item) => (
           <SidebarMenuItem key={item.title}>
-            <SidebarMenuButton asChild tooltip={item.title}>
-              <a href={item.url}>
+            <SidebarMenuButton asChild tooltip={item.title} isActive={pathname.includes(item.url)}>
+              <Link href={item.url}>
                 <item.icon />
                 <span>{item.title}</span>
-              </a>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         ))}

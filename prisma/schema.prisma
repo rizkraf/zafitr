@@ -32,10 +32,63 @@ model Post {
 }
 
 model User {
-    id       String  @id @default(cuid())
-    name     String?
-    username String? @unique
-    password String?
-    posts    Post[]
-    role     Role    @default(PETUGAS)
+    id           String        @id @default(cuid())
+    name         String?
+    username     String?       @unique
+    password     String?
+    posts        Post[]
+    zakatRecords ZakatRecord[]
+    role         Role          @default(PETUGAS)
+}
+
+model Muzakki {
+    id        String   @id @default(cuid())
+    name      String
+    email     String?
+    phone     String?
+    address   String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    zakatRecords ZakatRecord[]
+}
+
+model Mustahik {
+    id        String   @id @default(cuid())
+    name      String
+    email     String?
+    phone     String?
+    address   String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    zakatDistributions ZakatDistribution[]
+}
+
+model ZakatRecord {
+    id           String   @id @default(cuid())
+    userId       String
+    muzakkiId    String
+    amount       Float
+    dateReceived DateTime
+    createdAt    DateTime @default(now())
+    updatedAt    DateTime @updatedAt
+
+    zakatDistributions ZakatDistribution[]
+
+    user    User    @relation(fields: [userId], references: [id])
+    muzakki Muzakki @relation(fields: [muzakkiId], references: [id])
+}
+
+model ZakatDistribution {
+    id               String   @id @default(cuid())
+    mustahikId       String
+    zakatRecordId    String
+    amount           Float
+    dateDistribution DateTime
+    createdAt        DateTime @default(now())
+    updatedAt        DateTime @updatedAt
+
+    mustahik    Mustahik    @relation(fields: [mustahikId], references: [id])
+    zakatRecord ZakatRecord @relation(fields: [zakatRecordId], references: [id])
 }
