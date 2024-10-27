@@ -10,14 +10,30 @@ import {
 import { Separator } from "~/components/ui/separator";
 import { SidebarTrigger } from "~/components/ui/sidebar";
 import type { NextPageWithLayout } from "../_app";
-import { type ReactElement } from "react";
+import { useState, type ReactElement } from "react";
 import Head from "next/head";
-import { DataTable } from "./data-table";
-import { columns} from "./columns";
+import { DataTable } from "../../components/data-table";
+import { columns } from "./columns";
 import { api } from "~/utils/api";
+import { type SortingState } from "@tanstack/react-table";
+import { useDebounce } from "use-debounce";
 
 const Muzakki: NextPageWithLayout = () => {
-  const data = api.muzakki.list.useQuery().data;
+  const [search, setSearch] = useState("");
+  const [searchDebounce] = useDebounce(search, 500);
+  const [sorting, setSorting] = useState<SortingState>([
+    { id: "name", desc: false },
+  ]);
+  const [pagination, setPagination] = useState({
+    pageIndex: 0,
+    pageSize: 10,
+  });
+
+  const data = api.muzakki.list.useQuery({
+    pagination,
+    search: searchDebounce,
+    sorting,
+  }).data;
 
   return (
     <>
@@ -46,15 +62,20 @@ const Muzakki: NextPageWithLayout = () => {
         <h2 className="scroll-m-20 pb-2 text-3xl font-semibold tracking-tight first:mt-0">
           Daftar Muzakki
         </h2>
-        <div className="container mx-auto py-10">
-          <DataTable columns={columns} data={data ?? []} />
+        <div className="container mx-auto">
+          <DataTable
+            columns={columns}
+            data={data?.data ?? []}
+            pagination={pagination}
+            setPagination={setPagination}
+            pageCount={data?.meta.totalPage ?? 0}
+            sorting={sorting}
+            setSorting={setSorting}
+            search={search}
+            setSearch={setSearch}
+            searchPlaceholder="Cari Muzakki"
+          />
         </div>
-        {/* <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-          <div className="aspect-video rounded-xl bg-muted/50" />
-          <div className="aspect-video rounded-xl bg-muted/50" />
-          <div className="aspect-video rounded-xl bg-muted/50" />
-        </div>
-        <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min" /> */}
       </div>
     </>
   );

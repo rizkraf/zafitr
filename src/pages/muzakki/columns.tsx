@@ -6,6 +6,7 @@ import { type ColumnDef } from "@tanstack/react-table";
 // You can use a Zod schema here if you want.
 import { z } from "zod";
 import dayjs from "dayjs";
+import { DataTableColumnHeader } from "../../components/data-table-column-header";
 
 export const MuzakkiSchema = z.object({
   id: z.string(),
@@ -22,23 +23,33 @@ export type TMuzakki = z.infer<typeof MuzakkiSchema>;
 export const columns: ColumnDef<TMuzakki>[] = [
   {
     accessorKey: "name",
-    header: "Nama",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Nama" />
+    ),
   },
   {
     accessorKey: "email",
-    header: "Email",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Email" />
+    ),
   },
   {
     accessorKey: "phone",
-    header: "Nomor Telepon",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Nomor Telepon" />
+    ),
   },
   {
     accessorKey: "address",
-    header: "Alamat",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Alamat" />
+    ),
   },
   {
     accessorKey: "createdAt",
-    header: () => <div>Dibuat</div>,
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Dibuat" />
+    ),
     cell: ({ row }) => {
       const date = new Date(row.getValue("createdAt"));
       const formatted = dayjs(date).format("DD MMM YYYY HH:mm:ss");
@@ -48,7 +59,9 @@ export const columns: ColumnDef<TMuzakki>[] = [
   },
   {
     accessorKey: "updatedAt",
-    header: () => <div>Diperbarui</div>,
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Diperbarui" />
+    ),
     cell: ({ row }) => {
       const date = new Date(row.getValue("updatedAt"));
       const formatted = dayjs(date).format("DD MMM YYYY HH:mm:ss");
