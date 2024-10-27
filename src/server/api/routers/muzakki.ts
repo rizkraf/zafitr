@@ -95,7 +95,7 @@ export const muzakkiRouter = createTRPCRouter({
           }),
           z.literal(""),
         ]),
-        phone: z.string().optional(),
+        phone: z.string(),
         address: z.string().min(1),
       }),
     )
@@ -104,8 +104,8 @@ export const muzakkiRouter = createTRPCRouter({
         data: {
           name: input.name,
           muzakkiCategoryId: input.muzakkiCategoryId,
-          email: input.email,
-          phone: input.phone,
+          email: input.email || null,
+          phone: input.phone || null,
           address: input.address,
         },
         select: {

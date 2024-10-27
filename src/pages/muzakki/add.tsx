@@ -47,7 +47,7 @@ const formSchema = z.object({
     }),
     z.literal(""),
   ]),
-  phone: z.string().optional(),
+  phone: z.string(),
   address: z.string().min(1, {
     message: "Alamat harus diisi",
   }),

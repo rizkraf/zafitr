@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/prefer-nullish-coalescing */
 import { type Row } from "@tanstack/react-table";
 
 import { cn } from "~/lib/utils";
@@ -17,7 +16,7 @@ export function DataTableRowBody<TData>({
   return (
     <div className={cn(className)}>
       <p className="leading-7 [&:not(:first-child)]:mt-6">
-        {row.getValue(value) || "-"}
+        {row.getValue(value) ?? "-"}
       </p>
     </div>
   );

@@ -8,6 +8,8 @@ import { z } from "zod";
 import dayjs from "dayjs";
 import { DataTableColumnHeader } from "../../components/data-table-column-header";
 import { DataTableRowBody } from "~/components/data-table-row-body";
+import { Button } from "~/components/ui/button";
+import Link from "next/link";
 
 export const MuzakkiSchema = z.object({
   id: z.string(),
@@ -33,7 +35,11 @@ export const columns: ColumnDef<TMuzakki>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Nama" />
     ),
-    cell: ({ row }) => <DataTableRowBody row={row} value="name" />,
+    cell: ({ row }) => (
+      <Button variant="link" className="px-0" asChild>
+        <Link href={`/muzakki/${row.original.id}`}>{row.getValue("name")}</Link>
+      </Button>
+    ),
   },
   {
     accessorFn: (data) => data.muzakkiCategory.name,

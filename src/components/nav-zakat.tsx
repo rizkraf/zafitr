@@ -17,8 +17,8 @@ export function NavZakat({
     url: string;
     icon: LucideIcon;
   }[];
-  }) {
-    const pathname = usePathname()
+}) {
+  const pathname = usePathname();
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
@@ -26,7 +26,11 @@ export function NavZakat({
       <SidebarMenu>
         {zakats.map((item) => (
           <SidebarMenuItem key={item.title}>
-            <SidebarMenuButton asChild tooltip={item.title} isActive={pathname.includes(item.url)}>
+            <SidebarMenuButton
+              asChild
+              tooltip={item.title}
+              isActive={pathname?.includes(item.url)}
+            >
               <Link href={item.url}>
                 <item.icon />
                 <span>{item.title}</span>
