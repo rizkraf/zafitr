@@ -1,0 +1,12 @@
+import React from "react";
+
+export default function Loading() {
+  return (
+    <div className="flex w-full items-center justify-center">
+      <div className="flex flex-col items-center space-y-4">
+        <div className="h-8 w-8 animate-spin text-gray-500 dark:text-gray-400" />
+        <p className="text-gray-500 dark:text-gray-400">Loading...</p>
+      </div>
+    </div>
+  );
+}

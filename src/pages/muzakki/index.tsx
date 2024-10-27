@@ -19,6 +19,7 @@ import { type SortingState } from "@tanstack/react-table";
 import { useDebounce } from "use-debounce";
 import { Button } from "~/components/ui/button";
 import Link from "next/link";
+import Loading from "~/components/loading";
 
 const Muzakki: NextPageWithLayout = () => {
   const [search, setSearch] = useState("");
@@ -31,11 +32,11 @@ const Muzakki: NextPageWithLayout = () => {
     pageSize: 10,
   });
 
-  const data = api.muzakki.getList.useQuery({
+  const { data, isFetching } = api.muzakki.getList.useQuery({
     pagination,
     search: searchDebounce,
     sorting,
-  }).data;
+  });
 
   const buttons = (
     <Button asChild>
@@ -72,21 +73,25 @@ const Muzakki: NextPageWithLayout = () => {
         <h2 className="scroll-m-20 pb-2 text-3xl font-semibold tracking-tight first:mt-0">
           Daftar Muzakki
         </h2>
-        <div className="container mx-auto">
-          <DataTable
-            columns={columns}
-            data={data?.data ?? []}
-            pagination={pagination}
-            setPagination={setPagination}
-            pageCount={data?.meta.totalPage ?? 0}
-            sorting={sorting}
-            setSorting={setSorting}
-            search={search}
-            setSearch={setSearch}
-            searchPlaceholder="Cari Muzakki"
-            buttons={buttons}
-          />
-        </div>
+        {isFetching ? (
+          <Loading />
+        ) : (
+          <div className="container mx-auto">
+            <DataTable
+              columns={columns}
+              data={data?.data ?? []}
+              pagination={pagination}
+              setPagination={setPagination}
+              pageCount={data?.meta.totalPage ?? 0}
+              sorting={sorting}
+              setSorting={setSorting}
+              search={search}
+              setSearch={setSearch}
+              searchPlaceholder="Cari Muzakki"
+              buttons={buttons}
+            />
+          </div>
+        )}
       </div>
     </>
   );

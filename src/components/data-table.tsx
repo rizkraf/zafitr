@@ -19,8 +19,6 @@ import {
 import { DataTablePagination } from "./data-table-pagination";
 import { type Dispatch, type SetStateAction } from "react";
 import { Input } from "~/components/ui/input";
-import { Button } from "./ui/button";
-import Link from "next/link";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];

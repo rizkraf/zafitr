@@ -84,6 +84,29 @@ export const muzakkiRouter = createTRPCRouter({
         },
       };
     }),
+  getDetail: protectedProcedure
+    .input(z.string())
+    .query(async ({ ctx, input }) => {
+      const muzakki = await ctx.db.muzakki.findUnique({
+        where: {
+          id: input,
+        },
+        select: {
+          id: true,
+          name: true,
+          muzakkiCategory: true,
+          email: true,
+          address: true,
+          phone: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+      });
+
+      return {
+        data: muzakki,
+      };
+    }),
   create: protectedProcedure
     .input(
       z.object({
@@ -101,6 +124,50 @@ export const muzakkiRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       const muzakki = await ctx.db.muzakki.create({
+        data: {
+          name: input.name,
+          muzakkiCategoryId: input.muzakkiCategoryId,
+          email: input.email || null,
+          phone: input.phone || null,
+          address: input.address,
+        },
+        select: {
+          id: true,
+          name: true,
+          muzakkiCategory: true,
+          email: true,
+          address: true,
+          phone: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+      });
+
+      return {
+        data: muzakki,
+      };
+    }),
+  update: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        name: z.string().min(1),
+        muzakkiCategoryId: z.string().min(1),
+        email: z.union([
+          z.string().email({
+            message: "Email tidak valid",
+          }),
+          z.literal(""),
+        ]),
+        phone: z.string(),
+        address: z.string().min(1),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const muzakki = await ctx.db.muzakki.update({
+        where: {
+          id: input.id,
+        },
         data: {
           name: input.name,
           muzakkiCategoryId: input.muzakkiCategoryId,
