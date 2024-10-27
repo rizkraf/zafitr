@@ -74,9 +74,6 @@ dependencies:
   '@trpc/server':
     specifier: ^11.0.0-rc.446
     version: 11.0.0-rc.593
-  bcrpyt:
-    specifier: ^2.0.0
-    version: 2.0.0
   bcrypt:
     specifier: ^5.1.1
     version: 5.1.1
@@ -2344,11 +2341,6 @@ packages:
 
   /balanced-match@1.0.2:
     resolution: {integrity: sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==}
-
-  /bcrpyt@2.0.0:
-    resolution: {integrity: sha512-2dLzspsuyGKoUfV16yEOMflPsKOjUhFPiSjqeBr1Y0ZZceEcjayGlsUrIcOz9I6f+IwjBDuPSXnsjGAqIZcPPA==}
-    deprecated: Package abandoned, contact support@npmjs.com for more info.
-    dev: false
 
   /bcrypt@5.1.1:
     resolution: {integrity: sha512-AGBHOG5hPYZ5Xl9KXzU5iKq9516yEmvCKDg3ecP5kX2aB6UqTeXZxk2ELnDgDm6BQSMlLt9rDB4LoSMx0rYwww==}

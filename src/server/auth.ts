@@ -106,17 +106,19 @@ export const authOptions: NextAuthOptions = {
 
         const user = await db.user.findFirst({
           where: {
-        username: credentials.username,
+            username: credentials.username,
           },
         });
 
         if (!user) {
-          throw new Error("Tidak ditemukan pengguna dengan nama pengguna tersebut");
+          throw new Error(
+            "Tidak ditemukan pengguna dengan nama pengguna tersebut",
+          );
         }
 
         const isValidPassword = await bcrypt.compare(
           credentials.password,
-          user.password as string,
+          user.password!,
         );
 
         if (!isValidPassword) {
@@ -126,7 +128,7 @@ export const authOptions: NextAuthOptions = {
         return {
           id: user.id,
           name: user.name!,
-          username: user.username as string,
+          username: user.username!,
           role: user.role as UserRole,
         };
       },
