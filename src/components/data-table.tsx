@@ -4,6 +4,7 @@ import {
   type ColumnDef,
   flexRender,
   getCoreRowModel,
+  type RowSelectionState,
   type SortingState,
   useReactTable,
 } from "@tanstack/react-table";
@@ -20,7 +21,7 @@ import { DataTablePagination } from "./data-table-pagination";
 import { type Dispatch, type SetStateAction } from "react";
 import { Input } from "~/components/ui/input";
 
-interface DataTableProps<TData, TValue> {
+interface DataTableProps<TData extends { id: string | number }, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   pagination: {
@@ -39,10 +40,12 @@ interface DataTableProps<TData, TValue> {
   search: string;
   setSearch: Dispatch<SetStateAction<string>>;
   searchPlaceholder: string;
+  rowSelection: RowSelectionState;
+  setRowSelection: Dispatch<SetStateAction<RowSelectionState>>;
   buttons?: React.ReactNode;
 }
 
-export function DataTable<TData, TValue>({
+export function DataTable<TData extends { id: string | number; }, TValue>({
   columns,
   data,
   pagination,
@@ -50,6 +53,8 @@ export function DataTable<TData, TValue>({
   pageCount,
   sorting,
   setSorting,
+  rowSelection,
+  setRowSelection,
   search,
   setSearch,
   searchPlaceholder,
@@ -65,9 +70,12 @@ export function DataTable<TData, TValue>({
     state: {
       pagination,
       sorting,
+      rowSelection
     },
     manualSorting: true,
     onSortingChange: setSorting,
+    onRowSelectionChange: setRowSelection,
+    getRowId: (row) => row.id.toString(),
   });
 
   return (

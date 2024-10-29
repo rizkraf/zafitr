@@ -191,4 +191,19 @@ export const muzakkiRouter = createTRPCRouter({
         data: muzakki,
       };
     }),
+  deleteMany: protectedProcedure
+    .input(z.array(z.string()))
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db.muzakki.deleteMany({
+        where: {
+          id: {
+            in: input,
+          },
+        },
+      });
+
+      return {
+        data: null,
+      };
+    }),
 });

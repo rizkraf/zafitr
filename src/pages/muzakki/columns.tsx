@@ -9,6 +9,7 @@ import dayjs from "dayjs";
 import { DataTableColumnHeader } from "../../components/data-table-column-header";
 import { DataTableRowBody } from "~/components/data-table-row-body";
 import { Button } from "~/components/ui/button";
+import { Checkbox } from "~/components/ui/checkbox";
 import Link from "next/link";
 
 export const MuzakkiSchema = z.object({
@@ -30,6 +31,28 @@ export const MuzakkiSchema = z.object({
 export type TMuzakki = z.infer<typeof MuzakkiSchema>;
 
 export const columns: ColumnDef<TMuzakki>[] = [
+  {
+    id: "select",
+    header: ({ table }) => (
+      <Checkbox
+        checked={
+          table.getIsAllPageRowsSelected() ||
+          (table.getIsSomePageRowsSelected() && "indeterminate")
+        }
+        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        aria-label="Select all"
+      />
+    ),
+    cell: ({ row }) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        onCheckedChange={(value) => row.toggleSelected(!!value)}
+        aria-label="Select row"
+      />
+    ),
+    enableSorting: false,
+    enableHiding: false,
+  },
   {
     accessorKey: "name",
     header: ({ column }) => (
