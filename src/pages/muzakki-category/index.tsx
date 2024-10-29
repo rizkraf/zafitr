@@ -26,7 +26,7 @@ import Loading from "~/components/loading";
 import { Trash } from "lucide-react";
 import { useToast } from "~/hooks/use-toast";
 
-const Mustahik: NextPageWithLayout = () => {
+const MuzakkiCategory: NextPageWithLayout = () => {
   const { toast } = useToast();
   const [search, setSearch] = useState("");
   const [searchDebounce] = useDebounce(search, 500);
@@ -40,27 +40,26 @@ const Mustahik: NextPageWithLayout = () => {
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
 
   const { data, isFetching, isRefetching, refetch } =
-    api.mustahik.getList.useQuery({
+    api.muzakkiCategory.getList.useQuery({
       pagination,
       search: searchDebounce,
       sorting,
     });
 
   const { mutate, error, isSuccess, isError } =
-    api.mustahik.deleteMany.useMutation();
+    api.muzakkiCategory.deleteMany.useMutation();
 
   async function handleDelete() {
     const selectedIds = Object.keys(rowSelection).filter(
       (key) => rowSelection[key],
     );
     mutate(selectedIds);
-
   }
 
   useEffect(() => {
     if (isSuccess) {
       toast({
-        title: "Berhasil menghapus mustahik",
+        title: "Berhasil menghapus Kategori Muzakki",
       });
       setRowSelection({});
       void refetch();
@@ -81,11 +80,11 @@ const Mustahik: NextPageWithLayout = () => {
       {Object.keys(rowSelection).filter((key) => rowSelection[key]).length >
         0 && (
         <Button variant="destructive" onClick={handleDelete}>
-          <Trash className="h-4 w-4" /> Hapus Mustahik
+          <Trash className="h-4 w-4" /> Hapus Kategori Muzakki
         </Button>
       )}
       <Button asChild>
-        <Link href="/mustahik/add">Tambah Mustahik</Link>
+        <Link href="/muzakki-category/add">Tambah Kategori Muzakki</Link>
       </Button>
     </div>
   );
@@ -93,7 +92,7 @@ const Mustahik: NextPageWithLayout = () => {
   return (
     <>
       <Head>
-        <title>Mustahik</title>
+        <title>Kategori Muzakki</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <header className="flex h-16 shrink-0 items-center gap-2">
@@ -109,7 +108,7 @@ const Mustahik: NextPageWithLayout = () => {
               </BreadcrumbItem>
               <BreadcrumbSeparator className="hidden md:block" />
               <BreadcrumbItem>
-                <BreadcrumbPage>Daftar Mustahik</BreadcrumbPage>
+                <BreadcrumbPage>Daftar Kategori Muzakki</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
@@ -117,7 +116,7 @@ const Mustahik: NextPageWithLayout = () => {
       </header>
       <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
         <h2 className="scroll-m-20 pb-2 text-3xl font-semibold tracking-tight first:mt-0">
-          Daftar Mustahik
+          Daftar Kategori Muzakki
         </h2>
         {isRefetching || isFetching ? (
           <Loading />
@@ -135,7 +134,7 @@ const Mustahik: NextPageWithLayout = () => {
               setRowSelection={setRowSelection}
               search={search}
               setSearch={setSearch}
-              searchPlaceholder="Cari Mustahik"
+              searchPlaceholder="Cari Kategori Muzakki"
               buttons={buttons}
             />
           </div>
@@ -145,8 +144,8 @@ const Mustahik: NextPageWithLayout = () => {
   );
 };
 
-Mustahik.getLayout = function getLayout(page: ReactElement) {
+MuzakkiCategory.getLayout = function getLayout(page: ReactElement) {
   return <MainLayout>{page}</MainLayout>;
 };
 
-export default Mustahik;
+export default MuzakkiCategory;

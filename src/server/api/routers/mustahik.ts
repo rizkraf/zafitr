@@ -87,7 +87,7 @@ export const mustahikRouter = createTRPCRouter({
   getDetail: protectedProcedure
     .input(z.string())
     .query(async ({ ctx, input }) => {
-      const mustahik = await ctx.db.mustahik.findUnique({
+      const detail = await ctx.db.mustahik.findUnique({
         where: {
           id: input,
         },
@@ -104,7 +104,7 @@ export const mustahikRouter = createTRPCRouter({
       });
 
       return {
-        data: mustahik,
+        data: detail,
       };
     }),
   create: protectedProcedure
@@ -123,7 +123,7 @@ export const mustahikRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const mustahik = await ctx.db.mustahik.create({
+      const created = await ctx.db.mustahik.create({
         data: {
           name: input.name,
           mustahikCategoryId: input.mustahikCategoryId,
@@ -144,7 +144,7 @@ export const mustahikRouter = createTRPCRouter({
       });
 
       return {
-        data: mustahik,
+        data: created,
       };
     }),
   update: protectedProcedure
@@ -164,7 +164,7 @@ export const mustahikRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const mustahik = await ctx.db.mustahik.update({
+      const updated = await ctx.db.mustahik.update({
         where: {
           id: input.id,
         },
@@ -188,7 +188,7 @@ export const mustahikRouter = createTRPCRouter({
       });
 
       return {
-        data: mustahik,
+        data: updated,
       };
     }),
   deleteMany: protectedProcedure

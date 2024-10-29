@@ -115,9 +115,12 @@ const DetailMustahik: NextPageWithLayout = () => {
 
   useEffect(() => {
     if (isError) {
-      console.log(error);
+      toast({
+        title: error.message,
+        variant: "destructive",
+      });
     }
-  });
+  }, [isError, error, toast]);
 
   return (
     <>

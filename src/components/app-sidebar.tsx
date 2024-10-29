@@ -3,8 +3,12 @@ import {
   BookUser,
   Grip,
   HandCoins,
+  HandHeart,
   HeartHandshake,
+  History,
   House,
+  Ruler,
+  SmilePlus,
   UserRound,
 } from "lucide-react";
 
@@ -56,23 +60,23 @@ const data = {
   navMasterData: [
     {
       title: "Kategori Muzakki",
-      url: "#",
-      icon: HeartHandshake,
+      url: "/muzakki-category",
+      icon: HandHeart,
     },
     {
       title: "Kategori Mustahik",
       url: "#",
-      icon: HandCoins,
+      icon: SmilePlus,
     },
     {
       title: "Periode Zakat",
       url: "#",
-      icon: BookUser,
+      icon: History,
     },
     {
       title: "Unit Zakat",
       url: "#",
-      icon: UserRound,
+      icon: Ruler,
     },
   ],
 };

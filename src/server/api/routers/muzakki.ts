@@ -87,7 +87,7 @@ export const muzakkiRouter = createTRPCRouter({
   getDetail: protectedProcedure
     .input(z.string())
     .query(async ({ ctx, input }) => {
-      const muzakki = await ctx.db.muzakki.findUnique({
+      const detail = await ctx.db.muzakki.findUnique({
         where: {
           id: input,
         },
@@ -104,7 +104,7 @@ export const muzakkiRouter = createTRPCRouter({
       });
 
       return {
-        data: muzakki,
+        data: detail,
       };
     }),
   create: protectedProcedure
@@ -123,7 +123,7 @@ export const muzakkiRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const muzakki = await ctx.db.muzakki.create({
+      const created = await ctx.db.muzakki.create({
         data: {
           name: input.name,
           muzakkiCategoryId: input.muzakkiCategoryId,
@@ -144,7 +144,7 @@ export const muzakkiRouter = createTRPCRouter({
       });
 
       return {
-        data: muzakki,
+        data: created,
       };
     }),
   update: protectedProcedure
@@ -164,7 +164,7 @@ export const muzakkiRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const muzakki = await ctx.db.muzakki.update({
+      const updated = await ctx.db.muzakki.update({
         where: {
           id: input.id,
         },
@@ -188,7 +188,7 @@ export const muzakkiRouter = createTRPCRouter({
       });
 
       return {
-        data: muzakki,
+        data: updated,
       };
     }),
   deleteMany: protectedProcedure

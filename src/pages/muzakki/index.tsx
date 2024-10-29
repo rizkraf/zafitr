@@ -68,9 +68,12 @@ const Muzakki: NextPageWithLayout = () => {
 
   useEffect(() => {
     if (isError) {
-      console.log(error);
+      toast({
+        title: error.message,
+        variant: "destructive",
+      });
     }
-  });
+  }, [isError, error, toast]);
 
   const buttons = (
     <div className="flex flex-row space-x-3">
