@@ -21,6 +21,7 @@ import {
   SidebarMenuItem,
 } from "~/components/ui/sidebar";
 import Link from "next/link";
+import { NavMasterData } from "./nav-master-data";
 
 const data = {
   navMain: [
@@ -52,6 +53,28 @@ const data = {
       icon: UserRound,
     },
   ],
+  navMasterData: [
+    {
+      title: "Kategori Muzakki",
+      url: "#",
+      icon: HeartHandshake,
+    },
+    {
+      title: "Kategori Mustahik",
+      url: "#",
+      icon: HandCoins,
+    },
+    {
+      title: "Periode Zakat",
+      url: "#",
+      icon: BookUser,
+    },
+    {
+      title: "Unit Zakat",
+      url: "#",
+      icon: UserRound,
+    },
+  ],
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
@@ -62,7 +85,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
               <Link href="#">
-                <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
+                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
                   <Grip className="size-4" />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
@@ -76,6 +99,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarContent>
         <NavMain items={data.navMain} />
         <NavZakat zakats={data.navZakat} />
+        <NavMasterData masterData={data.navMasterData} />
       </SidebarContent>
       <SidebarFooter>
         <NavUser />
