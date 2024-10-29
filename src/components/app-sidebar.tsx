@@ -48,7 +48,7 @@ const data = {
     },
     {
       title: "Mustahik",
-      url: "#",
+      url: "/mustahik",
       icon: UserRound,
     },
   ],
