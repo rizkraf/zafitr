@@ -6,7 +6,7 @@ import { type ColumnDef } from "@tanstack/react-table";
 // You can use a Zod schema here if you want.
 import { z } from "zod";
 import dayjs from "dayjs";
-import { DataTableColumnHeader } from "../../../components/data-table-column-header";
+import { DataTableColumnHeader } from "../../data-table-column-header";
 import { Button } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
 import Link from "next/link";

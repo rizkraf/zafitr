@@ -13,7 +13,7 @@ import type { NextPageWithLayout } from "../_app";
 import { useEffect, useState, type ReactElement } from "react";
 import Head from "next/head";
 import { DataTable } from "../../components/data-table";
-import { columns } from "./muzakki/columns";
+import { columns } from "../../components/columns/kategori/muzakki";
 import { api } from "~/utils/api";
 import {
   type RowSelectionState,
@@ -26,7 +26,7 @@ import Loading from "~/components/loading";
 import { Trash } from "lucide-react";
 import { useToast } from "~/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
-import { mustahikColumns } from "./mustahik/columns";
+import { mustahikColumns } from "../../components/columns/kategori/mustahik";
 import { useSearchParams } from "next/navigation";
 
 const MuzakkiCategory: NextPageWithLayout = () => {

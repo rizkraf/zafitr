@@ -13,7 +13,7 @@ import type { NextPageWithLayout } from "../_app";
 import { useEffect, useState, type ReactElement } from "react";
 import Head from "next/head";
 import { DataTable } from "../../components/data-table";
-import { columns } from "./columns";
+import { columns } from "../../components/columns/mustahik";
 import { api } from "~/utils/api";
 import {
   type RowSelectionState,

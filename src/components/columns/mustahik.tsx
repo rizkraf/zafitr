@@ -6,21 +6,31 @@ import { type ColumnDef } from "@tanstack/react-table";
 // You can use a Zod schema here if you want.
 import { z } from "zod";
 import dayjs from "dayjs";
-import { DataTableColumnHeader } from "../../components/data-table-column-header";
+import { DataTableColumnHeader } from "../data-table-column-header";
+import { DataTableRowBody } from "~/components/data-table-row-body";
 import { Button } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
 import Link from "next/link";
 
-export const ZakatPeriodSchema = z.object({
+export const MustahikSchema = z.object({
   id: z.string(),
   name: z.string(),
+  mustahikCategory: z.object({
+    id: z.string(),
+    name: z.string(),
+    createdAt: z.date(),
+    updatedAt: z.date(),
+  }),
+  email: z.string().email().nullable(),
+  phone: z.string().nullable(),
+  address: z.string(),
   createdAt: z.date(),
   updatedAt: z.date(),
 });
 
-export type TZakatPeriod = z.infer<typeof ZakatPeriodSchema>;
+export type TMustahik = z.infer<typeof MustahikSchema>;
 
-export const columns: ColumnDef<TZakatPeriod>[] = [
+export const columns: ColumnDef<TMustahik>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -50,9 +60,37 @@ export const columns: ColumnDef<TZakatPeriod>[] = [
     ),
     cell: ({ row }) => (
       <Button variant="link" className="px-0" asChild>
-        <Link href={`/periode/${row.original.id}`}>{row.getValue("name")}</Link>
+        <Link href={`/mustahik/${row.original.id}`}>{row.getValue("name")}</Link>
       </Button>
     ),
+  },
+  {
+    accessorFn: (data) => data.mustahikCategory.name,
+    id: "mustahikCategory.name",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Kategori" />
+    ),
+  },
+  {
+    accessorKey: "email",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Email" />
+    ),
+    cell: ({ row }) => <DataTableRowBody row={row} value="email" />,
+  },
+  {
+    accessorKey: "phone",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Nomor Telepon" />
+    ),
+    cell: ({ row }) => <DataTableRowBody row={row} value="phone" />,
+  },
+  {
+    accessorKey: "address",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Alamat" />
+    ),
+    cell: ({ row }) => <DataTableRowBody row={row} value="address" />,
   },
   {
     accessorKey: "createdAt",

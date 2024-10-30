@@ -1,4 +1,4 @@
-import { AuthProvider } from "~/pages/providers";
+import AuthProvider from "~/pages/providers";
 import { AppSidebar } from "./app-sidebar";
 import { SidebarInset, SidebarProvider } from "./ui/sidebar";
 import { Toaster } from "~/components/ui/toaster";
