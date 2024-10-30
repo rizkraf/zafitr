@@ -57,9 +57,9 @@ const AddMustahikCategory: NextPageWithLayout = () => {
   useEffect(() => {
     if (isSuccess) {
       toast({
-        title: "Golongan Mustahik berhasil ditambahkan",
+        title: "Kategori Mustahik berhasil ditambahkan",
       });
-      router.push("/golongan?tabs=mustahik");
+      router.push("/kategori?tabs=mustahik");
       reset();
     }
   }, [isSuccess, router, toast, reset]);
@@ -76,7 +76,7 @@ const AddMustahikCategory: NextPageWithLayout = () => {
   return (
     <>
       <Head>
-        <title>Tambah Golongan Mustahik</title>
+        <title>Tambah Kategori Mustahik</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <header className="flex h-16 shrink-0 items-center gap-2">
@@ -93,12 +93,12 @@ const AddMustahikCategory: NextPageWithLayout = () => {
               <BreadcrumbSeparator className="hidden md:block" />
               <BreadcrumbItem className="hidden md:block">
                 <BreadcrumbLink asChild>
-                  <Link href="/golongan?tabs=mustahik">Daftar Golongan</Link>
+                  <Link href="/kategori?tabs=mustahik">Daftar Kategori</Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator className="hidden md:block" />
               <BreadcrumbItem>
-                <BreadcrumbPage>Tambah Golongan Mustahik</BreadcrumbPage>
+                <BreadcrumbPage>Tambah Kategori Mustahik</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
@@ -106,7 +106,7 @@ const AddMustahikCategory: NextPageWithLayout = () => {
       </header>
       <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
         <h2 className="scroll-m-20 pb-2 text-3xl font-semibold tracking-tight first:mt-0">
-          Tambah Golongan Mustahik
+          Tambah Kategori Mustahik
         </h2>
         <div className="container mx-auto">
           <Form {...form}>

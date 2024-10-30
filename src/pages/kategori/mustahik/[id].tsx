@@ -38,14 +38,14 @@ const formSchema = z.object({
   }),
 });
 
-const DetailMuzakkiCategory: NextPageWithLayout = () => {
+const DetailMustahikCategory: NextPageWithLayout = () => {
   const router = useRouter();
   const { toast } = useToast();
-  const { data, refetch, isFetching } = api.muzakkiCategory.getDetail.useQuery(
+  const { data, refetch, isFetching } = api.mustahikCategory.getDetail.useQuery(
     router.query.id as string,
   );
   const { mutate, isSuccess, isError, error, isPending, reset } =
-    api.muzakkiCategory.update.useMutation();
+    api.mustahikCategory.update.useMutation();
 
   const [isEdit, setIsEdit] = useState(false);
 
@@ -75,7 +75,7 @@ const DetailMuzakkiCategory: NextPageWithLayout = () => {
     if (isSuccess) {
       void refetch();
       toast({
-        title: "Golongan Muzakki berhasil diubah",
+        title: "Kategori Mustahik berhasil diubah",
       });
       reset();
       handleIsEdit();
@@ -94,7 +94,7 @@ const DetailMuzakkiCategory: NextPageWithLayout = () => {
   return (
     <>
       <Head>
-        <title>Detail Golongan Muzakki</title>
+        <title>Detail Kategori Mustahik</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <header className="flex h-16 shrink-0 items-center gap-2">
@@ -111,12 +111,12 @@ const DetailMuzakkiCategory: NextPageWithLayout = () => {
               <BreadcrumbSeparator className="hidden md:block" />
               <BreadcrumbItem className="hidden md:block">
                 <BreadcrumbLink asChild>
-                  <Link href="/golongan?tabs=muzakki">Daftar Golongan</Link>
+                  <Link href="/kategori?tabs=mustahik">Daftar Kategori</Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator className="hidden md:block" />
               <BreadcrumbItem>
-                <BreadcrumbPage>Detail Golongan Muzakki</BreadcrumbPage>
+                <BreadcrumbPage>Detail Kategori Mustahik</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
@@ -124,7 +124,7 @@ const DetailMuzakkiCategory: NextPageWithLayout = () => {
       </header>
       <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
         <h2 className="scroll-m-20 pb-2 text-3xl font-semibold tracking-tight first:mt-0">
-          Detail Golongan Muzakki
+          Detail Kategori Mustahik
         </h2>
         {isFetching ? (
           <Loading />
@@ -182,8 +182,8 @@ const DetailMuzakkiCategory: NextPageWithLayout = () => {
   );
 };
 
-DetailMuzakkiCategory.getLayout = function getLayout(page: ReactElement) {
+DetailMustahikCategory.getLayout = function getLayout(page: ReactElement) {
   return <MainLayout>{page}</MainLayout>;
 };
 
-export default DetailMuzakkiCategory;
+export default DetailMustahikCategory;

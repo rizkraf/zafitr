@@ -88,7 +88,7 @@ const MuzakkiCategory: NextPageWithLayout = () => {
   useEffect(() => {
     if (isSuccess) {
       toast({
-        title: "Berhasil menghapus Golongan Muzakki",
+        title: "Berhasil menghapus KAtegori Muzakki",
       });
       setRowSelection({});
       void refetch();
@@ -107,7 +107,7 @@ const MuzakkiCategory: NextPageWithLayout = () => {
   useEffect(() => {
     if (isSuccessMustahik) {
       toast({
-        title: "Berhasil menghapus Golongan Mustahik",
+        title: "Berhasil menghapus Kategori Mustahik",
       });
       setRowSelection({});
       void refetchMustahik();
@@ -145,11 +145,11 @@ const MuzakkiCategory: NextPageWithLayout = () => {
           {Object.keys(rowSelection).filter((key) => rowSelection[key]).length >
             0 && (
             <Button variant="destructive" onClick={handleDelete}>
-              <Trash className="h-4 w-4" /> Hapus Golongan Muzakki
+              <Trash className="h-4 w-4" /> Hapus Kategori Muzakki
             </Button>
           )}
           <Button asChild>
-            <Link href="/golongan/muzakki/add">Tambah Golongan Muzakki</Link>
+            <Link href="/kategori/muzakki/add">Tambah Kategori Muzakki</Link>
           </Button>
         </div>
       )}
@@ -158,11 +158,11 @@ const MuzakkiCategory: NextPageWithLayout = () => {
           {Object.keys(rowSelection).filter((key) => rowSelection[key]).length >
             0 && (
             <Button variant="destructive" onClick={handleDeleteMustahik}>
-              <Trash className="h-4 w-4" /> Hapus Golongan Mustahik
+              <Trash className="h-4 w-4" /> Hapus Kategori Mustahik
             </Button>
           )}
           <Button asChild>
-            <Link href="/golongan/mustahik/add">Tambah Golongan Mustahik</Link>
+            <Link href="/kategori/mustahik/add">Tambah Kategori Mustahik</Link>
           </Button>
         </div>
       )}
@@ -172,7 +172,7 @@ const MuzakkiCategory: NextPageWithLayout = () => {
   return (
     <>
       <Head>
-        <title>Golongan Muzakki</title>
+        <title>Kategori Muzakki</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <header className="flex h-16 shrink-0 items-center gap-2">
@@ -188,7 +188,7 @@ const MuzakkiCategory: NextPageWithLayout = () => {
               </BreadcrumbItem>
               <BreadcrumbSeparator className="hidden md:block" />
               <BreadcrumbItem>
-                <BreadcrumbPage>Daftar Golongan</BreadcrumbPage>
+                <BreadcrumbPage>Daftar Kategori</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
@@ -196,7 +196,7 @@ const MuzakkiCategory: NextPageWithLayout = () => {
       </header>
       <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
         <h2 className="scroll-m-20 pb-2 text-3xl font-semibold tracking-tight first:mt-0">
-          Daftar Golongan
+          Daftar Kategori
         </h2>
         {isRefetching ||
         isFetching ||
@@ -227,7 +227,7 @@ const MuzakkiCategory: NextPageWithLayout = () => {
                   setRowSelection={setRowSelection}
                   search={search}
                   setSearch={setSearch}
-                  searchPlaceholder="Cari Golongan Muzakki"
+                  searchPlaceholder="Cari Kategori Muzakki"
                   buttons={buttons}
                 />
               </div>
@@ -246,7 +246,7 @@ const MuzakkiCategory: NextPageWithLayout = () => {
                   setRowSelection={setRowSelection}
                   search={search}
                   setSearch={setSearch}
-                  searchPlaceholder="Cari Golongan Mustahik"
+                  searchPlaceholder="Cari Kategori Mustahik"
                   buttons={buttons}
                 />
               </div>

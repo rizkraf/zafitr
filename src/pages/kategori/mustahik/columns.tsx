@@ -11,16 +11,16 @@ import { Button } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
 import Link from "next/link";
 
-export const MuzakkiCategory = z.object({
+export const MustahikCategory = z.object({
   id: z.string(),
   name: z.string(),
   createdAt: z.date(),
   updatedAt: z.date(),
 });
 
-export type TMuzakkiCategory = z.infer<typeof MuzakkiCategory>;
+export type TMustahikCategory = z.infer<typeof MustahikCategory>;
 
-export const columns: ColumnDef<TMuzakkiCategory>[] = [
+export const mustahikColumns: ColumnDef<TMustahikCategory>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -50,7 +50,7 @@ export const columns: ColumnDef<TMuzakkiCategory>[] = [
     ),
     cell: ({ row }) => (
       <Button variant="link" className="px-0" asChild>
-        <Link href={`/golongan/muzakki/${row.original.id}`}>{row.getValue("name")}</Link>
+        <Link href={`/kategori/mustahik/${row.original.id}`}>{row.getValue("name")}</Link>
       </Button>
     ),
   },

@@ -36,13 +36,13 @@ const data = {
   ],
   navZakat: [
     {
-      title: "Penerimaan Zakat",
-      url: "#",
+      title: "Penerimaan",
+      url: "/penerimaan",
       icon: HeartHandshake,
     },
     {
-      title: "Distribusi Zakat",
-      url: "#",
+      title: "Distribusi",
+      url: "/distribusi",
       icon: HandCoins,
     },
     {
@@ -58,18 +58,18 @@ const data = {
   ],
   navMasterData: [
     {
-      title: "Golongan",
-      url: "/golongan",
+      title: "Kategori",
+      url: "/kategori",
       icon: SmilePlus,
     },
     {
-      title: "Periode Zakat",
-      url: "#",
+      title: "Periode",
+      url: "/periode",
       icon: History,
     },
     {
-      title: "Unit Zakat",
-      url: "#",
+      title: "Unit",
+      url: "/unit",
       icon: Ruler,
     },
   ],
