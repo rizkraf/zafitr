@@ -164,6 +164,16 @@ export const muzakkiRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      const existingMuzakki = await ctx.db.muzakki.findUnique({
+        where: {
+          id: input.id,
+        },
+      });
+
+      if (!existingMuzakki) {
+        throw new Error("Kesalahan: Muzakki tidak ditemukan");
+      }
+
       const updated = await ctx.db.muzakki.update({
         where: {
           id: input.id,
@@ -194,6 +204,26 @@ export const muzakkiRouter = createTRPCRouter({
   deleteMany: protectedProcedure
     .input(z.array(z.string()))
     .mutation(async ({ ctx, input }) => {
+      const existingIds = await ctx.db.muzakki.findMany({
+        where: {
+          id: {
+            in: input,
+          },
+        },
+        select: {
+          id: true,
+        },
+      });
+
+      const existingIdsSet = new Set(existingIds.map((item) => item.id));
+      const nonExistingIds = input.filter((id) => !existingIdsSet.has(id));
+
+      if (nonExistingIds.length > 0) {
+        throw new Error(
+          `Kesalahan: Muzakki dengan id ${nonExistingIds.join(", ")} tidak ditemukan`,
+        );
+      }
+
       await ctx.db.muzakki.deleteMany({
         where: {
           id: {

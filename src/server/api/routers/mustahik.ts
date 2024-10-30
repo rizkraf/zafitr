@@ -79,7 +79,8 @@ export const mustahikRouter = createTRPCRouter({
           total: await ctx.db.mustahik.count(),
           currentPage: (input.pagination?.pageIndex ?? 1) + 1, // Added +1 here
           totalPage: Math.ceil(
-            (await ctx.db.mustahik.count()) / (input.pagination?.pageSize ?? 10),
+            (await ctx.db.mustahik.count()) /
+              (input.pagination?.pageSize ?? 10),
           ),
         },
       };
@@ -164,6 +165,16 @@ export const mustahikRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      const existingMustahik = await ctx.db.mustahik.findUnique({
+        where: {
+          id: input.id,
+        },
+      });
+
+      if (!existingMustahik) {
+        throw new Error("Kesalahan: Mustahik tidak ditemukan");
+      }
+
       const updated = await ctx.db.mustahik.update({
         where: {
           id: input.id,
@@ -194,6 +205,26 @@ export const mustahikRouter = createTRPCRouter({
   deleteMany: protectedProcedure
     .input(z.array(z.string()))
     .mutation(async ({ ctx, input }) => {
+      const existingIds = await ctx.db.mustahik.findMany({
+        where: {
+          id: {
+            in: input,
+          },
+        },
+        select: {
+          id: true,
+        },
+      });
+
+      const existingIdSet = new Set(existingIds.map((mustahik) => mustahik.id));
+      const nonExistingIds = input.filter((id) => !existingIdSet.has(id));
+
+      if (nonExistingIds.length > 0) {
+        throw new Error(
+          `Kesalahan: Mustahik dengan id ${nonExistingIds.join(", ")} tidak ditemukan`,
+        );
+      }
+
       await ctx.db.mustahik.deleteMany({
         where: {
           id: {

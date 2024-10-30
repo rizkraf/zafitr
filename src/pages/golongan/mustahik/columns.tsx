@@ -6,21 +6,21 @@ import { type ColumnDef } from "@tanstack/react-table";
 // You can use a Zod schema here if you want.
 import { z } from "zod";
 import dayjs from "dayjs";
-import { DataTableColumnHeader } from "../../components/data-table-column-header";
+import { DataTableColumnHeader } from "../../../components/data-table-column-header";
 import { Button } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
 import Link from "next/link";
 
-export const MuzakkiCategory = z.object({
+export const MustahikCategory = z.object({
   id: z.string(),
   name: z.string(),
   createdAt: z.date(),
   updatedAt: z.date(),
 });
 
-export type TMuzakkiCategory = z.infer<typeof MuzakkiCategory>;
+export type TMustahikCategory = z.infer<typeof MustahikCategory>;
 
-export const columns: ColumnDef<TMuzakkiCategory>[] = [
+export const mustahikColumns: ColumnDef<TMustahikCategory>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -50,7 +50,7 @@ export const columns: ColumnDef<TMuzakkiCategory>[] = [
     ),
     cell: ({ row }) => (
       <Button variant="link" className="px-0" asChild>
-        <Link href={`/muzakki-category/${row.original.id}`}>{row.getValue("name")}</Link>
+        <Link href={`/golongan/mustahik/${row.original.id}`}>{row.getValue("name")}</Link>
       </Button>
     ),
   },

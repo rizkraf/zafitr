@@ -9,7 +9,7 @@ import {
 } from "~/components/ui/breadcrumb";
 import { Separator } from "~/components/ui/separator";
 import { SidebarTrigger } from "~/components/ui/sidebar";
-import type { NextPageWithLayout } from "../_app";
+import type { NextPageWithLayout } from "../../_app";
 import { useEffect, type ReactElement } from "react";
 import Head from "next/head";
 import Link from "next/link";
@@ -27,10 +27,7 @@ import {
 } from "~/components/ui/form";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
-import { Textarea } from "~/components/ui/textarea";
-import { Combobox } from "~/components/ui/combobox";
 import { api } from "~/utils/api";
-import PhoneInput from "react-phone-number-input/input";
 import { useToast } from "~/hooks/use-toast";
 import { useRouter } from "next/navigation";
 
@@ -60,9 +57,9 @@ const AddMuzakkiCategory: NextPageWithLayout = () => {
   useEffect(() => {
     if (isSuccess) {
       toast({
-        title: "Kategori Muzakki berhasil ditambahkan",
+        title: "Golongan Muzakki berhasil ditambahkan",
       });
-      router.push("/muzakki-category");
+      router.push("/golongan?tabs=muzakki");
       reset();
     }
   }, [isSuccess, router, toast, reset]);
@@ -79,7 +76,7 @@ const AddMuzakkiCategory: NextPageWithLayout = () => {
   return (
     <>
       <Head>
-        <title>Tambah Kategori Muzakki</title>
+        <title>Tambah Golongan Muzakki</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <header className="flex h-16 shrink-0 items-center gap-2">
@@ -96,12 +93,12 @@ const AddMuzakkiCategory: NextPageWithLayout = () => {
               <BreadcrumbSeparator className="hidden md:block" />
               <BreadcrumbItem className="hidden md:block">
                 <BreadcrumbLink asChild>
-                  <Link href="/muzakki-category">Daftar Kategori Muzakki</Link>
+                  <Link href="/golongan?tabs=muzakki">Daftar Golongan</Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator className="hidden md:block" />
               <BreadcrumbItem>
-                <BreadcrumbPage>Tambah Kategori Muzakki</BreadcrumbPage>
+                <BreadcrumbPage>Tambah Golongan Muzakki</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
@@ -109,7 +106,7 @@ const AddMuzakkiCategory: NextPageWithLayout = () => {
       </header>
       <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
         <h2 className="scroll-m-20 pb-2 text-3xl font-semibold tracking-tight first:mt-0">
-          Tambah Kategori Muzakki
+          Tambah Golongan Muzakki
         </h2>
         <div className="container mx-auto">
           <Form {...form}>

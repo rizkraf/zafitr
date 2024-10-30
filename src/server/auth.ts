@@ -92,6 +92,9 @@ export const authOptions: NextAuthOptions = {
   secret: env.NEXTAUTH_SECRET,
   adapter: PrismaAdapter(db) as Adapter,
   debug: env.NODE_ENV === "development",
+  jwt: {
+    maxAge: 1 * 24 * 60 * 60, // 1 day
+  },
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -101,7 +104,7 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.username || !credentials?.password) {
-          throw new Error("Nama pengguna dan kata sandi harus diisi");
+          throw new Error("Kesalahan: Nama pengguna dan kata sandi harus diisi");
         }
 
         const user = await db.user.findFirst({
@@ -112,7 +115,7 @@ export const authOptions: NextAuthOptions = {
 
         if (!user) {
           throw new Error(
-            "Tidak ditemukan pengguna dengan nama pengguna tersebut",
+            "Kesalahan: Tidak ditemukan pengguna dengan nama pengguna tersebut",
           );
         }
 
@@ -122,7 +125,7 @@ export const authOptions: NextAuthOptions = {
         );
 
         if (!isValidPassword) {
-          throw new Error("Kata sandi yang dimasukkan salah");
+          throw new Error("Kesalahan: Kata sandi yang dimasukkan salah");
         }
 
         return {

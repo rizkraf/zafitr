@@ -3,7 +3,6 @@ import {
   BookUser,
   Grip,
   HandCoins,
-  HandHeart,
   HeartHandshake,
   History,
   House,
@@ -59,13 +58,8 @@ const data = {
   ],
   navMasterData: [
     {
-      title: "Kategori Muzakki",
-      url: "/muzakki-category",
-      icon: HandHeart,
-    },
-    {
-      title: "Kategori Mustahik",
-      url: "#",
+      title: "Golongan",
+      url: "/golongan",
       icon: SmilePlus,
     },
     {

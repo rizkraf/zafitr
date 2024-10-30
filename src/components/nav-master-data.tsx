@@ -29,7 +29,7 @@ export function NavMasterData({
             <SidebarMenuButton
               asChild
               tooltip={item.title}
-              isActive={pathname?.includes(item.url)}
+              isActive={pathname === item.url}
             >
               <Link href={item.url}>
                 <item.icon />

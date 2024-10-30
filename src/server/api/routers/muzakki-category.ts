@@ -45,8 +45,10 @@ export const muzakkiCategoryRouter = createTRPCRouter({
             ? { [relation]: { [field]: sort.desc ? "desc" : "asc" } }
             : { [sort.id]: sort.desc ? "desc" : "asc" };
         }),
-        skip: input.pagination?.pageIndex,
-        take: input.pagination?.pageSize,
+        skip:
+          ((input.pagination?.pageIndex ?? 1) - 1 + 1) * // Added +1 here
+          (input.pagination?.pageSize ?? 10),
+        take: input.pagination?.pageSize ?? 10,
       });
       return {
         data: list,
@@ -54,7 +56,8 @@ export const muzakkiCategoryRouter = createTRPCRouter({
           total: await ctx.db.muzakkiCategory.count(),
           currentPage: (input.pagination?.pageIndex ?? 1) + 1, // Added +1 here
           totalPage: Math.ceil(
-            (await ctx.db.muzakkiCategory.count()) / (input.pagination?.pageSize ?? 10),
+            (await ctx.db.muzakkiCategory.count()) /
+              (input.pagination?.pageSize ?? 10),
           ),
         },
       };
@@ -120,7 +123,9 @@ export const muzakkiCategoryRouter = createTRPCRouter({
       });
 
       if (categoriesWithMuzakki.length > 0) {
-        throw new Error("Kesalahan: Data tidak bisa dihapus karena masih ada data muzakki yang terkait");
+        throw new Error(
+          "Kesalahan: Data tidak bisa dihapus karena masih ada data muzakki yang terkait",
+        );
       }
 
       await ctx.db.muzakkiCategory.deleteMany({
