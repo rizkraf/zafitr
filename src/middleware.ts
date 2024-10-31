@@ -11,4 +11,13 @@ export default withAuth({
   },
 });
 
-export const config = { matcher: ["/", "/muzakki/:path*", "/mustahik/:path*", "/kategori/:path*"] };
+export const config = {
+  matcher: [
+    "/",
+    "/muzakki/:path*",
+    "/mustahik/:path*",
+    "/kategori/:path*",
+    "/periode/:path*",
+    "/unit/:path*",
+  ],
+};
