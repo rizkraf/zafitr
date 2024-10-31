@@ -155,7 +155,7 @@ const AddZakatUnit: NextPageWithLayout = () => {
                 name="type"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Type</FormLabel>
+                    <FormLabel>Tipe</FormLabel>
                     <FormControl>
                       <Combobox
                         form={form}

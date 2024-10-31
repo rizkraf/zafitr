@@ -1,6 +1,7 @@
 import { type Row } from "@tanstack/react-table";
 
 import { cn } from "~/lib/utils";
+import { formatedCurrency } from "~/utils/parse";
 
 interface DataTableRowBodyProps<TData>
   extends React.HTMLAttributes<HTMLDivElement> {
@@ -17,10 +18,7 @@ export function DataTableRowBody<TData>({
 }: DataTableRowBodyProps<TData>) {
   const amount = parseFloat(row.getValue(value));
   const result = isFormatedAmount
-    ? new Intl.NumberFormat("id-ID", {
-        style: "currency",
-        currency: "IDR",
-      }).format(amount)
+    ? formatedCurrency(amount)
     : String(row.getValue(value));
 
   return (

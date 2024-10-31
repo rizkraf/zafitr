@@ -53,7 +53,7 @@ export const columns: ColumnDef<TZakatUnit>[] = [
     ),
     cell: ({ row }) => (
       <Button variant="link" className="px-0" asChild>
-        <Link href={`/periode/${row.original.id}`}>{row.getValue("name")}</Link>
+        <Link href={`/unit/${row.original.id}`}>{row.getValue("name")}</Link>
       </Button>
     ),
   },
