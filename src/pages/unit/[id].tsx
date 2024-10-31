@@ -30,7 +30,7 @@ import { Input } from "~/components/ui/input";
 import { useRouter } from "next/router";
 import { api } from "~/utils/api";
 import { useToast } from "~/hooks/use-toast";
-import Loading from "~/components/loading";
+import { Loading } from "~/components/loading";
 import { formatedCurrency, parseCurrency } from "~/utils/parse";
 import { Combobox } from "~/components/ui/combobox";
 import options from "~/utils/mask";
@@ -151,7 +151,7 @@ const DetailZakatUnit: NextPageWithLayout = () => {
           Detail Unit Zakat
         </h2>
         {isFetching ? (
-          <Loading />
+          <Loading>Loading...</Loading>
         ) : (
           <div className="container mx-auto">
             <Form {...form}>

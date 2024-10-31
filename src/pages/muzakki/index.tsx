@@ -22,7 +22,7 @@ import {
 import { useDebounce } from "use-debounce";
 import { Button } from "~/components/ui/button";
 import Link from "next/link";
-import Loading from "~/components/loading";
+import { Loading } from "~/components/loading";
 import { Trash } from "lucide-react";
 import { useToast } from "~/hooks/use-toast";
 
@@ -119,7 +119,7 @@ const Muzakki: NextPageWithLayout = () => {
           Daftar Muzakki
         </h2>
         {isRefetching || isFetching ? (
-          <Loading />
+          <Loading>Loading...</Loading>
         ) : (
           <div className="container mx-auto">
             <DataTable

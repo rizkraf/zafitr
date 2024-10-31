@@ -22,7 +22,7 @@ import {
 import { useDebounce } from "use-debounce";
 import { Button } from "~/components/ui/button";
 import Link from "next/link";
-import Loading from "~/components/loading";
+import {Loading} from "~/components/loading";
 import { Trash } from "lucide-react";
 import { useToast } from "~/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
@@ -202,7 +202,7 @@ const MuzakkiCategory: NextPageWithLayout = () => {
         isFetching ||
         isRefetchingMustahik ||
         isFetchingMustahik ? (
-          <Loading />
+          <Loading>Loading...</Loading>
         ) : (
           <Tabs
             defaultValue={tabActive}

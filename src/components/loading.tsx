@@ -1,12 +1,45 @@
-import React from "react";
+import React from 'react';
+import { cn } from '~/lib/utils';
+import { type VariantProps, cva } from 'class-variance-authority';
+import { Loader2 } from 'lucide-react';
 
-export default function Loading() {
+const loadingVariants = cva('flex-col items-center justify-center', {
+  variants: {
+    show: {
+      true: 'flex',
+      false: 'hidden',
+    },
+  },
+  defaultVariants: {
+    show: true,
+  },
+});
+
+const loaderVariants = cva('animate-spin text-primary', {
+  variants: {
+    size: {
+      small: 'size-6',
+      medium: 'size-8',
+      large: 'size-12',
+    },
+  },
+  defaultVariants: {
+    size: 'medium',
+  },
+});
+
+interface LoadingContentProps
+  extends VariantProps<typeof loadingVariants>,
+    VariantProps<typeof loaderVariants> {
+  className?: string;
+  children?: React.ReactNode;
+}
+
+export function Loading({ size, show, children, className }: LoadingContentProps) {
   return (
-    <div className="flex w-full items-center justify-center">
-      <div className="flex flex-col items-center space-y-4">
-        <div className="h-8 w-8 animate-spin text-gray-500 dark:text-gray-400" />
-        <p className="text-gray-500 dark:text-gray-400">Loading...</p>
-      </div>
-    </div>
+    <span className={loadingVariants({ show })}>
+      <Loader2 className={cn(loaderVariants({ size }), className)} />
+      {children}
+    </span>
   );
 }

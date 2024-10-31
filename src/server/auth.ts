@@ -56,6 +56,7 @@ declare module "next-auth" {
 export const authOptions: NextAuthOptions = {
   session: {
     strategy: "jwt",
+    maxAge: 1 * 24 * 60 * 60, // 30 days
   },
   callbacks: {
     async jwt({ token, account, user }) {
@@ -92,9 +93,6 @@ export const authOptions: NextAuthOptions = {
   secret: env.NEXTAUTH_SECRET,
   adapter: PrismaAdapter(db) as Adapter,
   debug: env.NODE_ENV === "development",
-  jwt: {
-    maxAge: 1 * 24 * 60 * 60, // 1 day
-  },
   providers: [
     CredentialsProvider({
       name: "Credentials",

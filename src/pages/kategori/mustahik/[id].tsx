@@ -30,7 +30,7 @@ import { Input } from "~/components/ui/input";
 import { useRouter } from "next/router";
 import { api } from "~/utils/api";
 import { useToast } from "~/hooks/use-toast";
-import Loading from "~/components/loading";
+import { Loading } from "~/components/loading";
 
 const formSchema = z.object({
   name: z.string().min(1, {
@@ -127,7 +127,7 @@ const DetailMustahikCategory: NextPageWithLayout = () => {
           Detail Kategori Mustahik
         </h2>
         {isFetching ? (
-          <Loading />
+          <Loading>Loading...</Loading>
         ) : (
           <div className="container mx-auto">
             <Form {...form}>
