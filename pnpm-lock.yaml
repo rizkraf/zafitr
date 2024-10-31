@@ -11,6 +11,15 @@ dependencies:
   '@hookform/resolvers':
     specifier: ^3.9.0
     version: 3.9.0(react-hook-form@7.53.1)
+  '@maskito/core':
+    specifier: ^3.2.0
+    version: 3.2.0
+  '@maskito/kit':
+    specifier: ^3.2.0
+    version: 3.2.0(@maskito/core@3.2.0)
+  '@maskito/react':
+    specifier: ^3.2.0
+    version: 3.2.0(@maskito/core@3.2.0)(react-dom@18.3.1)(react@18.3.1)
   '@prisma/client':
     specifier: ^5.14.0
     version: 5.21.1(prisma@5.21.1)
@@ -597,6 +606,30 @@ packages:
     transitivePeerDependencies:
       - encoding
       - supports-color
+    dev: false
+
+  /@maskito/core@3.2.0:
+    resolution: {integrity: sha512-c8GNwuz4PQmZqf5CSXIncwIkZSwBeU2FZtpBJtD21DaIe4uBQ541C0BncHMqEbLP2+n+HyFKEnT90m03BBlGrw==}
+    dev: false
+
+  /@maskito/kit@3.2.0(@maskito/core@3.2.0):
+    resolution: {integrity: sha512-fIUBu+RzWQtmDyBCV9cksFqLqCq4ag1Gv1pwn9PgB7m0pkjhJoBMfQAVkded6MKrUk+QLIZUjzbUwgJm0D98Aw==}
+    peerDependencies:
+      '@maskito/core': ^3.2.0
+    dependencies:
+      '@maskito/core': 3.2.0
+    dev: false
+
+  /@maskito/react@3.2.0(@maskito/core@3.2.0)(react-dom@18.3.1)(react@18.3.1):
+    resolution: {integrity: sha512-njL/Pmc2cSU9fC3FaX5iwesXaBBdgZH/xgTqyEhc1UCRP3zN1me2XFww0FK2LmdFK76wSQ2MC5ggFXKvP3rzTw==}
+    peerDependencies:
+      '@maskito/core': ^3.2.0
+      react: '>=16.8'
+      react-dom: '>=16.8'
+    dependencies:
+      '@maskito/core': 3.2.0
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
     dev: false
 
   /@next/env@14.2.16:

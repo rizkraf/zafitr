@@ -18,6 +18,9 @@
   "dependencies": {
     "@auth/prisma-adapter": "^1.6.0",
     "@hookform/resolvers": "^3.9.0",
+    "@maskito/core": "^3.2.0",
+    "@maskito/kit": "^3.2.0",
+    "@maskito/react": "^3.2.0",
     "@prisma/client": "^5.14.0",
     "@radix-ui/react-avatar": "^1.1.1",
     "@radix-ui/react-checkbox": "^1.1.2",

@@ -2,9 +2,9 @@ import { z } from "zod";
 
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 
-export const zakatPeriodRouter = createTRPCRouter({
+export const zakatUnitRouter = createTRPCRouter({
   getAll: protectedProcedure.query(async ({ ctx }) => {
-    const periods = await ctx.db.zakatPeriod.findMany();
+    const periods = await ctx.db.zakatUnit.findMany();
     return {
       data: periods,
     };
@@ -28,7 +28,7 @@ export const zakatPeriodRouter = createTRPCRouter({
       }),
     )
     .query(async ({ ctx, input }) => {
-      const list = await ctx.db.zakatPeriod.findMany({
+      const list = await ctx.db.zakatUnit.findMany({
         where: {
           OR: [
             {
@@ -53,10 +53,10 @@ export const zakatPeriodRouter = createTRPCRouter({
       return {
         data: list,
         meta: {
-          total: await ctx.db.zakatPeriod.count(),
+          total: await ctx.db.zakatUnit.count(),
           currentPage: (input.pagination?.pageIndex ?? 1) + 1, // Added +1 here
           totalPage: Math.ceil(
-            (await ctx.db.zakatPeriod.count()) /
+            (await ctx.db.zakatUnit.count()) /
               (input.pagination?.pageSize ?? 10),
           ),
         },
@@ -65,7 +65,7 @@ export const zakatPeriodRouter = createTRPCRouter({
   getDetail: protectedProcedure
     .input(z.string())
     .query(async ({ ctx, input }) => {
-      const detail = await ctx.db.zakatPeriod.findUnique({
+      const detail = await ctx.db.zakatUnit.findUnique({
         where: {
           id: input,
         },
@@ -78,12 +78,16 @@ export const zakatPeriodRouter = createTRPCRouter({
     .input(
       z.object({
         name: z.string(),
+        type: z.enum(["BERAS", "UANG"]),
+        conversionRate: z.number(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const created = await ctx.db.zakatPeriod.create({
+      const created = await ctx.db.zakatUnit.create({
         data: {
           name: input.name,
+          type: input.type,
+          conversionRate: input.conversionRate,
         },
       });
       return {
@@ -95,15 +99,19 @@ export const zakatPeriodRouter = createTRPCRouter({
       z.object({
         id: z.string(),
         name: z.string(),
+        type: z.enum(["BERAS", "UANG"]),
+        conversionRate: z.number(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const updated = await ctx.db.zakatPeriod.update({
+      const updated = await ctx.db.zakatUnit.update({
         where: {
           id: input.id,
         },
         data: {
           name: input.name,
+          type: input.type,
+          conversionRate: input.conversionRate,
         },
       });
       return {
@@ -113,22 +121,7 @@ export const zakatPeriodRouter = createTRPCRouter({
   deleteMany: protectedProcedure
     .input(z.array(z.string()))
     .mutation(async ({ ctx, input }) => {
-      // Check if any of the categories have associated muzakki data
-      const periodsWithRecord = await ctx.db.zakatRecord.findMany({
-        where: {
-          zakatPeriod: {
-            in: input,
-          },
-        },
-      });
-
-      if (periodsWithRecord.length > 0) {
-        throw new Error(
-          "Kesalahan: Data tidak bisa dihapus karena masih ada data penerimaan zakat yang terkait",
-        );
-      }
-
-      await ctx.db.zakatPeriod.deleteMany({
+      await ctx.db.zakatUnit.deleteMany({
         where: {
           id: {
             in: input,
