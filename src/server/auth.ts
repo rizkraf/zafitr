@@ -91,6 +91,7 @@ export const authOptions: NextAuthOptions = {
     signIn: "/login",
   },
   secret: env.NEXTAUTH_SECRET,
+  useSecureCookies: env.NODE_ENV === "production",
   adapter: PrismaAdapter(db) as Adapter,
   debug: env.NODE_ENV === "development",
   providers: [
