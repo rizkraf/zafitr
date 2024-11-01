@@ -10,7 +10,7 @@ import {
 import { Separator } from "~/components/ui/separator";
 import { SidebarTrigger } from "~/components/ui/sidebar";
 import type { NextPageWithLayout } from "../_app";
-import { useEffect, useMemo, type ReactElement } from "react";
+import { useEffect, type ReactElement } from "react";
 import Head from "next/head";
 import Link from "next/link";
 

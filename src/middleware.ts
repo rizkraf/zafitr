@@ -18,6 +18,6 @@ export const config = {
     "/mustahik/:path*",
     "/kategori/:path*",
     "/periode/:path*",
-    "/unit/:path*",
+    "/penerimaan/:path*",
   ],
 };
