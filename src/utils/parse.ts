@@ -2,6 +2,10 @@ const parseCurrency = (value: string) => {
   return parseFloat(value.replace(/[Rp.]/g, "").replace(",", "."));
 };
 
+const parseDecimal = (value: string) => {
+  return parseFloat(value.replace(/,/g, "."));
+}
+
 const formatedCurrency = (value: number) => {
   const result = new Intl.NumberFormat("id-ID", {
     style: "currency",
@@ -11,4 +15,10 @@ const formatedCurrency = (value: number) => {
   return result;
 };
 
-export { parseCurrency, formatedCurrency };
+const formatedDecimal = (value: number) => {
+  const result = new Intl.NumberFormat("id-ID").format(value);
+
+  return result;
+}
+
+export { parseCurrency, formatedCurrency, parseDecimal, formatedDecimal };

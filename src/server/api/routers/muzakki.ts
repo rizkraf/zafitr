@@ -3,6 +3,24 @@ import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 
 export const muzakkiRouter = createTRPCRouter({
+  getAll: protectedProcedure.query(async ({ ctx }) => {
+    const list = await ctx.db.muzakki.findMany({
+      select: {
+        id: true,
+        name: true,
+        muzakkiCategory: true,
+        email: true,
+        address: true,
+        phone: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+
+    return {
+      data: list,
+    };
+  }),
   getList: protectedProcedure
     .input(
       z.object({

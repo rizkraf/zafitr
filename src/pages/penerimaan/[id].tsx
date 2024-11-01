@@ -27,63 +27,75 @@ import {
 } from "~/components/ui/form";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
+import { Textarea } from "~/components/ui/textarea";
+import { Combobox } from "~/components/ui/combobox";
 import { useRouter } from "next/router";
 import { api } from "~/utils/api";
 import { useToast } from "~/hooks/use-toast";
 import { Loading } from "~/components/loading";
 import { formatedCurrency, parseCurrency } from "~/utils/parse";
-import { Combobox } from "~/components/ui/combobox";
-import options from "~/utils/mask";
 import { useMaskito } from "@maskito/react";
 
 const formSchema = z.object({
-  name: z.string().min(1, {
-    message: "Nama harus diisi",
+  dateReceived: z.date(),
+  userId: z.string().min(1, {
+    message: "User harus diisi",
   }),
-  type: z.enum(["BERAS", "UANG"], {
-    message: "Tipe harus diisi",
+  muzakkiId: z.string().min(1, {
+    message: "Muzakki harus diisi",
   }),
-  conversionRate: z.coerce.string().min(1, {
-    message: "Konversi harus diisi",
+  periodId: z.string().min(1, {
+    message: "Periode harus diisi",
   }),
+  amount: z.coerce.string().min(1, {
+    message: "Jumlah harus diisi",
+  }),
+  type: z.enum(["BERAS", "UANG"]),
 });
 
-const DetailZakatUnit: NextPageWithLayout = () => {
-  const inputRef = useMaskito({ options });
-  const unitType = [
-    { value: "BERAS", label: "BERAS" },
-    { value: "UANG", label: "UANG" },
-  ];
+import { maskitoCurrency } from "~/utils/mask";
+import { DatePicker } from "~/components/ui/date-picker";
+import dayjs from "dayjs";
+
+const DetailZakatRecord: NextPageWithLayout = () => {
+  const inputRef = useMaskito({ options: maskitoCurrency });
   const router = useRouter();
   const { toast } = useToast();
-  const { data, refetch, isFetching } = api.zakatUnit.getDetail.useQuery(
+  const { data, refetch, isFetching } = api.zakatRecord.getDetail.useQuery(
     router.query.id as string,
   );
   const { mutate, isSuccess, isError, error, isPending, reset } =
-    api.zakatUnit.update.useMutation();
+    api.zakatRecord.update.useMutation();
 
   const [isEdit, setIsEdit] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
+      muzakkiId: "",
+      userId: "",
+      periodId: "",
+      amount: "",
       type: "BERAS",
-      conversionRate: "",
+      dateReceived: new Date(),
     },
     values: {
-      name: data?.data?.name ?? "",
+      muzakkiId: data?.data?.muzakki.id ?? "",
+      userId: data?.data?.user.id ?? "",
+      periodId: data?.data?.period.id ?? "",
+      amount: data?.data?.amount.toString() ?? "",
       type: data?.data?.type ?? "BERAS",
-      conversionRate: data?.data?.conversionRate.toString() ?? "",
+      dateReceived: new Date(data?.data?.dateReceived ?? ""),
     },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    const parsedConversionRate = parseCurrency(values.conversionRate);
+    const parsedConversionRate = parseCurrency(values.amount);
     const updatedValues = {
       ...values,
-      conversionRate: parsedConversionRate,
+      amount: parsedConversionRate,
     };
+
     mutate({
       id: router.query.id as string,
       ...updatedValues,
@@ -95,11 +107,30 @@ const DetailZakatUnit: NextPageWithLayout = () => {
     form.reset();
   }, [isEdit, form]);
 
+  const muzakki = api.muzakki.getAll.useQuery().data;
+  const muzakkiOptions: { label: string; value: string }[] =
+    muzakki?.data?.map((mzk) => ({
+      label: mzk.name,
+      value: mzk.id,
+    })) ?? [];
+
+  const period = api.zakatPeriod.getAll.useQuery().data;
+  const periodOptions: { label: string; value: string }[] =
+    period?.data?.map((prd) => ({
+      label: prd.name,
+      value: prd.id,
+    })) ?? [];
+
+  const typeOptions = [
+    { label: "BERAS", value: "BERAS" },
+    { label: "UANG", value: "UANG" },
+  ];
+
   useEffect(() => {
     if (isSuccess) {
       void refetch();
       toast({
-        title: "Unit Zakat berhasil diubah",
+        title: "Penerimaan Zakat berhasil diubah",
       });
       reset();
       handleIsEdit();
@@ -118,7 +149,7 @@ const DetailZakatUnit: NextPageWithLayout = () => {
   return (
     <>
       <Head>
-        <title>Detail Unit Zakat</title>
+        <title>Detail Penerimaan Zakat</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <header className="flex h-16 shrink-0 items-center gap-2">
@@ -135,12 +166,12 @@ const DetailZakatUnit: NextPageWithLayout = () => {
               <BreadcrumbSeparator className="hidden md:block" />
               <BreadcrumbItem className="hidden md:block">
                 <BreadcrumbLink asChild>
-                  <Link href="/unit">Daftar Unit Zakat</Link>
+                  <Link href="/penerimaan">Daftar Penerimaan Zakat</Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator className="hidden md:block" />
               <BreadcrumbItem>
-                <BreadcrumbPage>Detail Unit Zakat</BreadcrumbPage>
+                <BreadcrumbPage>Detail Penerimaan Zakat</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
@@ -148,7 +179,7 @@ const DetailZakatUnit: NextPageWithLayout = () => {
       </header>
       <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
         <h2 className="scroll-m-20 pb-2 text-3xl font-semibold tracking-tight first:mt-0">
-          Detail Unit Zakat
+          Detail Penerimaan Zakat
         </h2>
         {isFetching ? (
           <Loading>Loading...</Loading>
@@ -161,16 +192,47 @@ const DetailZakatUnit: NextPageWithLayout = () => {
               >
                 <FormField
                   control={form.control}
-                  name="name"
+                  name="muzakkiId"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Nama</FormLabel>
+                      <FormLabel>Muzakki</FormLabel>
                       <FormControl>
                         {isEdit ? (
-                          <Input {...field} />
+                          <Combobox
+                            form={form}
+                            field={field}
+                            name="muzakkiId"
+                            options={muzakkiOptions}
+                            selectPlaceHolder="Pilih Muzakki..."
+                          />
                         ) : (
                           <p className="leading-7 [&:not(:first-child)]:mt-6">
-                            {data?.data?.name}
+                            {data?.data?.muzakki.name}
+                          </p>
+                        )}
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="periodId"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col">
+                      <FormLabel>Periode</FormLabel>
+                      <FormControl>
+                        {isEdit ? (
+                          <Combobox
+                            form={form}
+                            field={field}
+                            name="periodId"
+                            options={periodOptions}
+                            selectPlaceHolder="Pilih Periode..."
+                          />
+                        ) : (
+                          <p className="leading-7 [&:not(:first-child)]:mt-6">
+                            {data?.data?.period.name}
                           </p>
                         )}
                       </FormControl>
@@ -190,12 +252,12 @@ const DetailZakatUnit: NextPageWithLayout = () => {
                             form={form}
                             field={field}
                             name="type"
-                            options={unitType}
+                            options={typeOptions}
                             selectPlaceHolder="Pilih Tipe..."
                           />
                         ) : (
                           <p className="leading-7 [&:not(:first-child)]:mt-6">
-                            {data?.data?.type}
+                            {data?.data?.type ?? "-"}
                           </p>
                         )}
                       </FormControl>
@@ -205,25 +267,43 @@ const DetailZakatUnit: NextPageWithLayout = () => {
                 />
                 <FormField
                   control={form.control}
-                  name="conversionRate"
+                  name="amount"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Konversi</FormLabel>
+                      <FormLabel>Besaran Zakat</FormLabel>
                       <FormControl>
                         {isEdit ? (
                           <Input
                             {...field}
                             ref={inputRef}
                             onInput={(e) =>
-                              form.setValue(
-                                "conversionRate",
-                                e.currentTarget.value,
-                              )
+                              form.setValue("amount", e.currentTarget.value)
                             }
                           />
                         ) : (
                           <p className="leading-7 [&:not(:first-child)]:mt-6">
-                            {formatedCurrency(data?.data?.conversionRate ?? 0)}
+                            {formatedCurrency(data?.data?.amount ?? 0) ?? "-"}
+                          </p>
+                        )}
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="dateReceived"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Tanggal Diterima</FormLabel>
+                      <FormControl>
+                        {isEdit ? (
+                          <DatePicker field={field} />
+                        ) : (
+                          <p className="leading-7 [&:not(:first-child)]:mt-6">
+                            {dayjs(data?.data?.dateReceived).format(
+                              "DD MMMM YYYY",
+                            )}
                           </p>
                         )}
                       </FormControl>
@@ -259,8 +339,8 @@ const DetailZakatUnit: NextPageWithLayout = () => {
   );
 };
 
-DetailZakatUnit.getLayout = function getLayout(page: ReactElement) {
+DetailZakatRecord.getLayout = function getLayout(page: ReactElement) {
   return <MainLayout>{page}</MainLayout>;
 };
 
-export default DetailZakatUnit;
+export default DetailZakatRecord;

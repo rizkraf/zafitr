@@ -75,14 +75,16 @@ model Mustahik {
 }
 
 model ZakatRecord {
-    id           String   @id @default(cuid())
-    userId       String
-    muzakkiId    String
-    zakatPeriod  String
-    amount       Float
-    dateReceived DateTime
-    createdAt    DateTime @default(now())
-    updatedAt    DateTime @updatedAt
+    id                String   @id @default(cuid())
+    transactionNumber String   @unique
+    userId            String
+    muzakkiId         String
+    zakatPeriod       String
+    type              UnitType
+    amount            Float
+    dateReceived      DateTime
+    createdAt         DateTime @default(now())
+    updatedAt         DateTime @updatedAt
 
     zakatDistributions ZakatDistribution[]
 
@@ -129,13 +131,4 @@ model ZakatPeriod {
     updatedAt DateTime @updatedAt
 
     zakatRecords ZakatRecord[]
-}
-
-model ZakatUnit {
-    id             String   @id @default(cuid())
-    name           String
-    type           UnitType
-    conversionRate Float
-    createdAt      DateTime @default(now())
-    updatedAt      DateTime @updatedAt
 }

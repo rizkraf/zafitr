@@ -10,7 +10,7 @@ import {
 import { Separator } from "~/components/ui/separator";
 import { SidebarTrigger } from "~/components/ui/sidebar";
 import type { NextPageWithLayout } from "../_app";
-import { useEffect, type ReactElement } from "react";
+import { useEffect, useMemo, type ReactElement } from "react";
 import Head from "next/head";
 import Link from "next/link";
 
@@ -27,62 +27,89 @@ import {
 } from "~/components/ui/form";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
+import { Combobox } from "~/components/ui/combobox";
 import { api } from "~/utils/api";
+
 import { useToast } from "~/hooks/use-toast";
 import { useRouter } from "next/navigation";
-import { Combobox } from "~/components/ui/combobox";
-import { useMaskito } from "@maskito/react";
-
-const formSchema = z.object({
-  name: z.string().min(1, {
-    message: "Nama harus diisi",
-  }),
-  type: z.enum(["BERAS", "UANG"], {
-    message: "Tipe harus diisi",
-  }),
-  conversionRate: z.coerce.string().min(1, {
-    message: "Konversi harus diisi",
-  }),
-});
-
-import options from "~/utils/mask";
 import { parseCurrency } from "~/utils/parse";
 
-const AddZakatUnit: NextPageWithLayout = () => {
-  const inputRef = useMaskito({ options });
-  const unitType = [
-    { value: "BERAS", label: "BERAS" },
-    { value: "UANG", label: "UANG" },
-  ];
+const formSchema = z.object({
+  dateReceived: z.date(),
+  userId: z.string().min(1, {
+    message: "User harus diisi",
+  }),
+  muzakkiId: z.string().min(1, {
+    message: "Muzakki harus diisi",
+  }),
+  periodId: z.string().min(1, {
+    message: "Periode harus diisi",
+  }),
+  amount: z.coerce.string().min(1, {
+    message: "Jumlah harus diisi",
+  }),
+  type: z.enum(["BERAS", "UANG"]),
+});
+
+import { maskitoCurrency } from "~/utils/mask";
+import { useMaskito } from "@maskito/react";
+import { DatePicker } from "~/components/ui/date-picker";
+import { useSession } from "next-auth/react";
+
+const AddZakatRecord: NextPageWithLayout = () => {
+  const inputRef = useMaskito({ options: maskitoCurrency });
   const { toast } = useToast();
   const router = useRouter();
   const { mutate, isSuccess, isError, error, isPending, reset } =
-    api.zakatUnit.create.useMutation();
+    api.zakatRecord.create.useMutation();
+  const { data: sessionData } = useSession();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
+      dateReceived: new Date(),
+      userId: "",
+      muzakkiId: "",
+      periodId: "",
+      amount: "",
       type: "BERAS",
-      conversionRate: "",
     },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    const parsedConversionRate = parseCurrency(values.conversionRate);
+    const parsedConversionRate = parseCurrency(values.amount);
     const updatedValues = {
       ...values,
-      conversionRate: parsedConversionRate,
+      amount: parsedConversionRate,
     };
     mutate(updatedValues);
   }
 
+  const muzakki = api.muzakki.getAll.useQuery().data;
+  const muzakkiOptions: { label: string; value: string }[] =
+    muzakki?.data?.map((mzk) => ({
+      label: mzk.name,
+      value: mzk.id,
+    })) ?? [];
+
+  const period = api.zakatPeriod.getAll.useQuery().data;
+  const periodOptions: { label: string; value: string }[] =
+    period?.data?.map((prd) => ({
+      label: prd.name,
+      value: prd.id,
+    })) ?? [];
+
+  const typeOptions = [
+    { label: "BERAS", value: "BERAS" },
+    { label: "UANG", value: "UANG" },
+  ];
+
   useEffect(() => {
     if (isSuccess) {
       toast({
-        title: "Unit Zakat berhasil ditambahkan",
+        title: "Penerimaan Zakat berhasil ditambahkan",
       });
-      router.push("/unit");
+      router.push("/penerimaan");
       reset();
     }
   }, [isSuccess, router, toast, reset]);
@@ -96,10 +123,16 @@ const AddZakatUnit: NextPageWithLayout = () => {
     }
   }, [isError, error, toast]);
 
+  useEffect(() => {
+    if (sessionData) {
+      form.setValue("userId", sessionData.user.id);
+    }
+  }, [sessionData, form]);
+
   return (
     <>
       <Head>
-        <title>Tambah Unit Zakat</title>
+        <title>Tambah Penerimaan Zakat</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <header className="flex h-16 shrink-0 items-center gap-2">
@@ -116,12 +149,12 @@ const AddZakatUnit: NextPageWithLayout = () => {
               <BreadcrumbSeparator className="hidden md:block" />
               <BreadcrumbItem className="hidden md:block">
                 <BreadcrumbLink asChild>
-                  <Link href="/unit">Daftar Unit Zakat</Link>
+                  <Link href="/penerimaan">Daftar Penerimaan Zakat</Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator className="hidden md:block" />
               <BreadcrumbItem>
-                <BreadcrumbPage>Tambah Unit Zakat</BreadcrumbPage>
+                <BreadcrumbPage>Tambah Penerimaan Zakat</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
@@ -129,7 +162,7 @@ const AddZakatUnit: NextPageWithLayout = () => {
       </header>
       <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
         <h2 className="scroll-m-20 pb-2 text-3xl font-semibold tracking-tight first:mt-0">
-          Tambah Unit Zakat
+          Tambah Penerimaan Zakat
         </h2>
         <div className="container mx-auto">
           <Form {...form}>
@@ -139,12 +172,37 @@ const AddZakatUnit: NextPageWithLayout = () => {
             >
               <FormField
                 control={form.control}
-                name="name"
+                name="muzakkiId"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Nama</FormLabel>
+                  <FormItem className="flex flex-col">
+                    <FormLabel>Muzakki</FormLabel>
                     <FormControl>
-                      <Input {...field} />
+                      <Combobox
+                        form={form}
+                        field={field}
+                        name="muzakkiId"
+                        options={muzakkiOptions}
+                        selectPlaceHolder="Pilih Muzakki..."
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="periodId"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col">
+                    <FormLabel>Periode</FormLabel>
+                    <FormControl>
+                      <Combobox
+                        form={form}
+                        field={field}
+                        name="periodId"
+                        options={periodOptions}
+                        selectPlaceHolder="Pilih Periode..."
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -154,14 +212,14 @@ const AddZakatUnit: NextPageWithLayout = () => {
                 control={form.control}
                 name="type"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem className="flex flex-col">
                     <FormLabel>Tipe</FormLabel>
                     <FormControl>
                       <Combobox
                         form={form}
                         field={field}
                         name="type"
-                        options={unitType}
+                        options={typeOptions}
                         selectPlaceHolder="Pilih Tipe..."
                       />
                     </FormControl>
@@ -171,18 +229,31 @@ const AddZakatUnit: NextPageWithLayout = () => {
               />
               <FormField
                 control={form.control}
-                name="conversionRate"
+                name="amount"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Konversi</FormLabel>
+                    <FormLabel>Besaran Zakat</FormLabel>
                     <FormControl>
                       <Input
                         {...field}
                         ref={inputRef}
                         onInput={(e) =>
-                          form.setValue("conversionRate", e.currentTarget.value)
+                          form.setValue("amount", e.currentTarget.value)
                         }
                       />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="dateReceived"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col">
+                    <FormLabel>Tanggal Diterima</FormLabel>
+                    <FormControl>
+                      <DatePicker field={field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -199,8 +270,8 @@ const AddZakatUnit: NextPageWithLayout = () => {
   );
 };
 
-AddZakatUnit.getLayout = function getLayout(page: ReactElement) {
+AddZakatRecord.getLayout = function getLayout(page: ReactElement) {
   return <MainLayout>{page}</MainLayout>;
 };
 
-export default AddZakatUnit;
+export default AddZakatRecord;

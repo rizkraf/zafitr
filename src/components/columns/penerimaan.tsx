@@ -7,23 +7,35 @@ import { type ColumnDef } from "@tanstack/react-table";
 import { z } from "zod";
 import dayjs from "dayjs";
 import { DataTableColumnHeader } from "../data-table-column-header";
+import { DataTableRowBody } from "~/components/data-table-row-body";
 import { Button } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
 import Link from "next/link";
-import { DataTableRowBody } from "../data-table-row-body";
 
-export const ZakatUnitSchema = z.object({
+export const MuzakkiSchema = z.object({
   id: z.string(),
-  name: z.string(),
+  transactionNumber: z.string(),
+  user: z.object({
+    name: z.string().nullable(),
+    username: z.string().nullable(),
+    role: z.string(),
+  }),
+  muzakki: z.object({
+    name: z.string(),
+  }),
+  period: z.object({
+    name: z.string(),
+  }),
   type: z.string(),
-  conversionRate: z.number(),
+  amount: z.number(),
+  dateReceived: z.date(),
   createdAt: z.date(),
   updatedAt: z.date(),
 });
 
-export type TZakatUnit = z.infer<typeof ZakatUnitSchema>;
+export type TMuzakki = z.infer<typeof MuzakkiSchema>;
 
-export const columns: ColumnDef<TZakatUnit>[] = [
+export const columns: ColumnDef<TMuzakki>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -47,14 +59,37 @@ export const columns: ColumnDef<TZakatUnit>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "name",
+    accessorKey: "transactionNumber",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Nama" />
+      <DataTableColumnHeader column={column} title="No. Transaksi" />
     ),
     cell: ({ row }) => (
       <Button variant="link" className="px-0" asChild>
-        <Link href={`/unit/${row.original.id}`}>{row.getValue("name")}</Link>
+        <Link href={`/penerimaan/${row.original.id}`}>
+          {row.getValue("transactionNumber")}
+        </Link>
       </Button>
+    ),
+  },
+  {
+    accessorFn: (data) => data.user.name,
+    id: "user.name",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Petugas" />
+    ),
+  },
+  {
+    accessorFn: (data) => data.muzakki.name,
+    id: "muzakki.name",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Muzakki" />
+    ),
+  },
+  {
+    accessorFn: (data) => data.period.name,
+    id: "period.name",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Periode" />
     ),
   },
   {
@@ -67,18 +102,23 @@ export const columns: ColumnDef<TZakatUnit>[] = [
   {
     accessorKey: "amount",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Besaran" />
-    ),
-    cell: ({ row }) => <DataTableRowBody row={row} value="amount" />,
-  },
-  {
-    accessorKey: "conversionRate",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Konversi" />
+      <DataTableColumnHeader column={column} title="Besaran Zakat" />
     ),
     cell: ({ row }) => (
-      <DataTableRowBody row={row} value="conversionRate" isFormatedAmount />
+      <DataTableRowBody row={row} value="amount" isFormatedAmount />
     ),
+  },
+  {
+    accessorKey: "dateReceived",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Tanggal Diterima" />
+    ),
+    cell: ({ row }) => {
+      const date = new Date(row.getValue("dateReceived"));
+      const formatted = dayjs(date).format("DD MMM YYYY");
+
+      return <div>{formatted}</div>;
+    },
   },
   {
     accessorKey: "createdAt",
