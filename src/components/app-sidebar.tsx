@@ -67,11 +67,6 @@ const data = {
       url: "/periode",
       icon: History,
     },
-    {
-      title: "Unit",
-      url: "/unit",
-      icon: Ruler,
-    },
   ],
 };
 
