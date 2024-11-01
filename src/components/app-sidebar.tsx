@@ -6,7 +6,6 @@ import {
   HeartHandshake,
   History,
   House,
-  Ruler,
   SmilePlus,
   UserRound,
 } from "lucide-react";
