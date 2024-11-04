@@ -12,7 +12,7 @@ import { Button } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
 import Link from "next/link";
 
-export const MuzakkiSchema = z.object({
+export const ZakatRecordSchema = z.object({
   id: z.string(),
   transactionNumber: z.string(),
   user: z.object({
@@ -33,9 +33,9 @@ export const MuzakkiSchema = z.object({
   updatedAt: z.date(),
 });
 
-export type TMuzakki = z.infer<typeof MuzakkiSchema>;
+export type TZakatRecord = z.infer<typeof ZakatRecordSchema>;
 
-export const columns: ColumnDef<TMuzakki>[] = [
+export const columns: ColumnDef<TZakatRecord>[] = [
   {
     id: "select",
     header: ({ table }) => (

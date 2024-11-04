@@ -19,11 +19,11 @@ export function DataTableRowBody<TData>({
   const amount = parseFloat(row.getValue(value));
   const result = isFormatedAmount
     ? formatedCurrency(amount)
-    : String(row.getValue(value));
+    : String(row.getValue(value) !== null ? row.getValue(value) : "-");
 
   return (
     <div className={cn(className)}>
-      <p className="leading-7 [&:not(:first-child)]:mt-6">{result ?? "-"}</p>
+      <p className="leading-7 [&:not(:first-child)]:mt-6">{result}</p>
     </div>
   );
 }

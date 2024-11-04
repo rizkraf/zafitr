@@ -254,4 +254,87 @@ export const muzakkiRouter = createTRPCRouter({
         data: null,
       };
     }),
+  getZakatRecords: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        pagination: z
+          .object({
+            pageIndex: z.number().optional(),
+            pageSize: z.number().optional(),
+          })
+          .optional(),
+        search: z.string().optional(),
+        sorting: z.array(
+          z.object({
+            id: z.string(),
+            desc: z.boolean(),
+          }),
+        ),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const list = await ctx.db.zakatRecord.findMany({
+        where: {
+          muzakkiId: input.id,
+          OR: [
+            {
+              transactionNumber: {
+                contains: input.search,
+                mode: "insensitive",
+              },
+            },
+            {
+              period: {
+                name: {
+                  contains: input.search,
+                  mode: "insensitive",
+                }
+              },
+            },
+          ]
+        },
+        orderBy: input.sorting.map((sort) => {
+          const [relation, field] = sort.id.split(".") as [string, string];
+          return field
+            ? { [relation]: { [field]: sort.desc ? "desc" : "asc" } }
+            : { [sort.id]: sort.desc ? "desc" : "asc" };
+        }),
+        skip:
+          ((input.pagination?.pageIndex ?? 1) - 1 + 1) * // Added +1 here
+          (input.pagination?.pageSize ?? 10),
+        take: input.pagination?.pageSize ?? 10,
+        select: {
+          id: true,
+          transactionNumber: true,
+          muzakki: true,
+          period: true,
+          user: true,
+          amount: true,
+          dateReceived: true,
+          createdAt: true,
+          updatedAt: true,
+          type: true,
+        },
+      });
+
+      return {
+        data: list,
+        meta: {
+          total: await ctx.db.zakatRecord.count({
+            where: {
+              muzakkiId: input.id,
+            },
+          }),
+          currentPage: (input.pagination?.pageIndex ?? 1) + 1, // Added +1 here
+          totalPage: Math.ceil(
+            (await ctx.db.zakatRecord.count({
+              where: {
+                muzakkiId: input.id,
+              },
+            })) / (input.pagination?.pageSize ?? 10),
+          ),
+        },
+      };
+    }),
 });

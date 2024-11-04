@@ -34,6 +34,10 @@ import { useRouter } from "next/router";
 import { api } from "~/utils/api";
 import { useToast } from "~/hooks/use-toast";
 import { Loading } from "~/components/loading";
+import { useDebounce } from "use-debounce";
+import { type RowSelectionState, type SortingState } from "@tanstack/react-table";
+import { DataTable } from "~/components/data-table";
+import { columnsZakatRecords } from "~/components/columns/muzakki";
 
 const formSchema = z.object({
   name: z.string().min(1, {
@@ -57,11 +61,31 @@ const formSchema = z.object({
 const DetailMuzakki: NextPageWithLayout = () => {
   const router = useRouter();
   const { toast } = useToast();
+  const [search, setSearch] = useState("");
+  const [searchDebounce] = useDebounce(search, 500);
+  const [sorting, setSorting] = useState<SortingState>([
+    { id: "dateReceived", desc: false },
+  ]);
+  const [pagination, setPagination] = useState({
+    pageIndex: 0,
+    pageSize: 10,
+  });
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const { data, refetch, isFetching } = api.muzakki.getDetail.useQuery(
     router.query.id as string,
   );
   const { mutate, isSuccess, isError, error, isPending, reset } =
     api.muzakki.update.useMutation();
+
+  const {
+    data: dataZakat,
+    isFetching: isFetchingZakat,
+  } = api.muzakki.getZakatRecords.useQuery({
+    id: router.query.id as string,
+    pagination,
+    search: searchDebounce,
+    sorting,
+  });
 
   const [isEdit, setIsEdit] = useState(false);
 
@@ -101,6 +125,8 @@ const DetailMuzakki: NextPageWithLayout = () => {
       label: category.name,
       value: category.id,
     })) ?? [];
+
+  console.log(dataZakat);
 
   useEffect(() => {
     if (isSuccess) {
@@ -292,6 +318,29 @@ const DetailMuzakki: NextPageWithLayout = () => {
                 )}
               </form>
             </Form>
+          </div>
+        )}
+        <h2 className="scroll-m-20 text-3xl font-semibold tracking-tight mt-4">
+          Histori Penerimaan Zakat
+        </h2>
+        {isFetchingZakat ? (
+          <Loading>Loading...</Loading>
+        ) : (
+          <div className="container mx-auto">
+            <DataTable
+              columns={columnsZakatRecords}
+              data={dataZakat?.data ?? []}
+              pagination={pagination}
+              setPagination={setPagination}
+              pageCount={dataZakat?.meta.totalPage ?? 0}
+              sorting={sorting}
+              setSorting={setSorting}
+              rowSelection={rowSelection}
+              setRowSelection={setRowSelection}
+              search={search}
+              setSearch={setSearch}
+              searchPlaceholder="Cari Penerimaan Zakat"
+            />
           </div>
         )}
       </div>
