@@ -94,13 +94,14 @@ model ZakatRecord {
 }
 
 model ZakatDistribution {
-    id               String   @id @default(cuid())
-    mustahikId       String
-    zakatRecordId    String
-    amount           Float
-    dateDistribution DateTime
-    createdAt        DateTime @default(now())
-    updatedAt        DateTime @updatedAt
+    id                String   @id @default(cuid())
+    transactionNumber String   @unique
+    mustahikId        String
+    zakatRecordId     String
+    amount            Float
+    dateDistribution  DateTime
+    createdAt         DateTime @default(now())
+    updatedAt         DateTime @updatedAt
 
     mustahik    Mustahik    @relation(fields: [mustahikId], references: [id])
     zakatRecord ZakatRecord @relation(fields: [zakatRecordId], references: [id])

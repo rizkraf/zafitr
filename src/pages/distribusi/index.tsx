@@ -13,7 +13,7 @@ import type { NextPageWithLayout } from "../_app";
 import { useEffect, useState, type ReactElement } from "react";
 import Head from "next/head";
 import { DataTable } from "../../components/data-table";
-import { columns } from "../../components/columns/penerimaan";
+import { columns } from "../../components/columns/distribusi";
 import { api } from "~/utils/api";
 import {
   type RowSelectionState,
@@ -26,12 +26,12 @@ import { Loading } from "~/components/loading";
 import { Trash } from "lucide-react";
 import { useToast } from "~/hooks/use-toast";
 
-const ZakatRecord: NextPageWithLayout = () => {
+const ZakatDistribution: NextPageWithLayout = () => {
   const { toast } = useToast();
   const [search, setSearch] = useState("");
   const [searchDebounce] = useDebounce(search, 500);
   const [sorting, setSorting] = useState<SortingState>([
-    { id: "dateReceived", desc: false },
+    { id: "transactionNumber", desc: false },
   ]);
   const [pagination, setPagination] = useState({
     pageIndex: 0,
@@ -40,14 +40,14 @@ const ZakatRecord: NextPageWithLayout = () => {
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
 
   const { data, isFetching, isRefetching, refetch } =
-    api.zakatRecord.getList.useQuery({
+    api.zakatDistribution.getList.useQuery({
       pagination,
       search: searchDebounce,
       sorting,
     });
 
   const { mutate, error, isSuccess, isError } =
-    api.zakatRecord.deleteMany.useMutation();
+    api.zakatDistribution.deleteMany.useMutation();
 
   async function handleDelete() {
     const selectedIds = Object.keys(rowSelection).filter(
@@ -59,7 +59,7 @@ const ZakatRecord: NextPageWithLayout = () => {
   useEffect(() => {
     if (isSuccess) {
       toast({
-        title: "Berhasil menghapus penerimaan zakat",
+        title: "Berhasil menghapus distribusi zakat",
       });
       setRowSelection({});
       void refetch();
@@ -80,11 +80,11 @@ const ZakatRecord: NextPageWithLayout = () => {
       {Object.keys(rowSelection).filter((key) => rowSelection[key]).length >
         0 && (
         <Button variant="destructive" onClick={handleDelete}>
-          <Trash className="h-4 w-4" /> Hapus Penerimaan Zakat
+          <Trash className="h-4 w-4" /> Hapus Distribusi Zakat
         </Button>
       )}
       <Button asChild>
-        <Link href="/penerimaan/add">Tambah Penerimaan Zakat</Link>
+        <Link href="/distribusi/add">Tambah Distribusi Zakat</Link>
       </Button>
     </div>
   );
@@ -92,7 +92,7 @@ const ZakatRecord: NextPageWithLayout = () => {
   return (
     <>
       <Head>
-        <title>Penerimaan Zakat</title>
+        <title>Distribusi Zakat</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <header className="flex h-16 shrink-0 items-center gap-2">
@@ -108,7 +108,7 @@ const ZakatRecord: NextPageWithLayout = () => {
               </BreadcrumbItem>
               <BreadcrumbSeparator className="hidden md:block" />
               <BreadcrumbItem>
-                <BreadcrumbPage>Daftar Penerimaan Zakat</BreadcrumbPage>
+                <BreadcrumbPage>Daftar Distribusi Zakat</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
@@ -116,7 +116,7 @@ const ZakatRecord: NextPageWithLayout = () => {
       </header>
       <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
         <h2 className="scroll-m-20 pb-2 text-3xl font-semibold tracking-tight first:mt-0">
-          Daftar Penerimaan Zakat
+          Daftar Distribusi Zakat
         </h2>
         {isRefetching || isFetching ? (
           <Loading>Loading...</Loading>
@@ -134,7 +134,7 @@ const ZakatRecord: NextPageWithLayout = () => {
               setRowSelection={setRowSelection}
               search={search}
               setSearch={setSearch}
-              searchPlaceholder="Cari Penerimaan Zakat"
+              searchPlaceholder="Cari Distribusi Zakat"
               buttons={buttons}
             />
           </div>
@@ -144,8 +144,8 @@ const ZakatRecord: NextPageWithLayout = () => {
   );
 };
 
-ZakatRecord.getLayout = function getLayout(page: ReactElement) {
+ZakatDistribution.getLayout = function getLayout(page: ReactElement) {
   return <MainLayout>{page}</MainLayout>;
 };
 
-export default ZakatRecord;
+export default ZakatDistribution;

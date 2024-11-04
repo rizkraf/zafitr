@@ -3,6 +3,12 @@ import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 
 export const zakatRecordRouter = createTRPCRouter({
+  getAll: protectedProcedure.query(async ({ ctx }) => {
+    const zakatRecords = await ctx.db.zakatRecord.findMany();
+    return {
+      data: zakatRecords,
+    };
+  }),
   getList: protectedProcedure
     .input(
       z.object({
@@ -131,12 +137,15 @@ export const zakatRecordRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       const generateTransactionNumber = () => {
-        const timestamp = Date.now().toString();
-        const randomPart = Math.random()
-          .toString(36)
-          .substring(2, 8)
-          .toUpperCase();
-        return `ZKT-${timestamp}-${randomPart}`;
+        const date = new Date();
+        const year = date.getFullYear().toString().slice(-2);
+        const month = (date.getMonth() + 1).toString().padStart(2, "0");
+        const day = date.getDate().toString().padStart(2, "0");
+        const random = Math.floor(Math.random() * 1000)
+          .toString()
+          .padStart(3, "0");
+
+        return `ZKT${year}${month}${day}${random}`;
       };
 
       const transactionNumber = generateTransactionNumber();

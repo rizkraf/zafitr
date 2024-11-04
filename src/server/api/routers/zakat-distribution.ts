@@ -2,13 +2,7 @@ import { z } from "zod";
 
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 
-export const mustahikRouter = createTRPCRouter({
-  getAll: protectedProcedure.query(async ({ ctx }) => {
-    const mustahiks = await ctx.db.mustahik.findMany();
-    return {
-      data: mustahiks,
-    };
-  }),
+export const zakatDistributionRouter = createTRPCRouter({
   getList: protectedProcedure
     .input(
       z.object({
@@ -28,33 +22,23 @@ export const mustahikRouter = createTRPCRouter({
       }),
     )
     .query(async ({ ctx, input }) => {
-      const list = await ctx.db.mustahik.findMany({
+      const list = await ctx.db.zakatDistribution.findMany({
         where: {
           OR: [
             {
-              name: {
+              transactionNumber: {
                 contains: input.search,
                 mode: "insensitive",
               },
             },
             {
-              address: {
-                contains: input.search,
-                mode: "insensitive",
-              },
-            },
-            {
-              email: {
-                contains: input.search,
-                mode: "insensitive",
-              },
-            },
-            {
-              phone: {
-                contains: input.search,
-                mode: "insensitive",
-              },
-            },
+              mustahik: {
+                name: {
+                  contains: input.search,
+                  mode: "insensitive",
+                },
+              }
+            }
           ],
         },
         orderBy: input.sorting.map((sort) => {
@@ -69,11 +53,11 @@ export const mustahikRouter = createTRPCRouter({
         take: input.pagination?.pageSize ?? 10,
         select: {
           id: true,
-          name: true,
-          mustahikCategory: true,
-          email: true,
-          address: true,
-          phone: true,
+          transactionNumber: true,
+          zakatRecord: true,
+          mustahik: true,
+          amount: true,
+          dateDistribution: true,
           createdAt: true,
           updatedAt: true,
         },
@@ -82,10 +66,10 @@ export const mustahikRouter = createTRPCRouter({
       return {
         data: list,
         meta: {
-          total: await ctx.db.mustahik.count(),
+          total: await ctx.db.zakatDistribution.count(),
           currentPage: (input.pagination?.pageIndex ?? 1) + 1, // Added +1 here
           totalPage: Math.ceil(
-            (await ctx.db.mustahik.count()) /
+            (await ctx.db.zakatDistribution.count()) /
               (input.pagination?.pageSize ?? 10),
           ),
         },
@@ -94,17 +78,17 @@ export const mustahikRouter = createTRPCRouter({
   getDetail: protectedProcedure
     .input(z.string())
     .query(async ({ ctx, input }) => {
-      const detail = await ctx.db.mustahik.findUnique({
+      const detail = await ctx.db.zakatDistribution.findUnique({
         where: {
           id: input,
         },
         select: {
           id: true,
-          name: true,
-          mustahikCategory: true,
-          email: true,
-          address: true,
-          phone: true,
+          transactionNumber: true,
+          zakatRecord: true,
+          mustahik: true,
+          amount: true,
+          dateDistribution: true,
           createdAt: true,
           updatedAt: true,
         },
@@ -117,34 +101,39 @@ export const mustahikRouter = createTRPCRouter({
   create: protectedProcedure
     .input(
       z.object({
-        name: z.string().min(1),
-        mustahikCategoryId: z.string().min(1),
-        email: z.union([
-          z.string().email({
-            message: "Email tidak valid",
-          }),
-          z.literal(""),
-        ]),
-        phone: z.string(),
-        address: z.string().min(1),
+        mustahikId: z.string(),
+        zakatRecordId: z.string(),
+        amount: z.number(),
+        dateDistribution: z.date(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const created = await ctx.db.mustahik.create({
+      const generateTransactionNumber = () => {
+        const date = new Date();
+        const year = date.getFullYear().toString().slice(-2);
+        const month = (date.getMonth() + 1).toString().padStart(2, "0");
+        const day = date.getDate().toString().padStart(2, "0");
+        const random = Math.floor(Math.random() * 1000).toString().padStart(3, "0");
+
+        return `DST${year}${month}${day}${random}`;
+      };
+
+      const transactionNumber = generateTransactionNumber();
+
+      const created = await ctx.db.zakatDistribution.create({
         data: {
-          name: input.name,
-          mustahikCategoryId: input.mustahikCategoryId,
-          email: input.email || null,
-          phone: input.phone || null,
-          address: input.address,
+          transactionNumber,
+          mustahikId: input.mustahikId,
+          zakatRecordId: input.zakatRecordId,
+          amount: input.amount,
+          dateDistribution: input.dateDistribution,
         },
         select: {
           id: true,
-          name: true,
-          mustahikCategory: true,
-          email: true,
-          address: true,
-          phone: true,
+          transactionNumber: true,
+          mustahik: true,
+          amount: true,
+          dateDistribution: true,
           createdAt: true,
           updatedAt: true,
         },
@@ -158,47 +147,39 @@ export const mustahikRouter = createTRPCRouter({
     .input(
       z.object({
         id: z.string(),
-        name: z.string().min(1),
-        mustahikCategoryId: z.string().min(1),
-        email: z.union([
-          z.string().email({
-            message: "Email tidak valid",
-          }),
-          z.literal(""),
-        ]),
-        phone: z.string(),
-        address: z.string().min(1),
+        mustahikId: z.string(),
+        zakatRecordId: z.string(),
+        amount: z.number(),
+        dateDistribution: z.date(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const existingMustahik = await ctx.db.mustahik.findUnique({
+      const existingZakatRecord = await ctx.db.zakatDistribution.findUnique({
         where: {
           id: input.id,
         },
       });
 
-      if (!existingMustahik) {
-        throw new Error("Kesalahan: Mustahik tidak ditemukan");
+      if (!existingZakatRecord) {
+        throw new Error("Kesalahan: Distribusi Zakat tidak ditemukan");
       }
 
-      const updated = await ctx.db.mustahik.update({
+      const updated = await ctx.db.zakatDistribution.update({
         where: {
           id: input.id,
         },
         data: {
-          name: input.name,
-          mustahikCategoryId: input.mustahikCategoryId,
-          email: input.email || null,
-          phone: input.phone || null,
-          address: input.address,
+          mustahikId: input.mustahikId,
+          zakatRecordId: input.zakatRecordId,
+          amount: input.amount,
+          dateDistribution: input.dateDistribution,
         },
         select: {
           id: true,
-          name: true,
-          mustahikCategory: true,
-          email: true,
-          address: true,
-          phone: true,
+          transactionNumber: true,
+          mustahik: true,
+          amount: true,
+          dateDistribution: true,
           createdAt: true,
           updatedAt: true,
         },
@@ -211,7 +192,7 @@ export const mustahikRouter = createTRPCRouter({
   deleteMany: protectedProcedure
     .input(z.array(z.string()))
     .mutation(async ({ ctx, input }) => {
-      const existingIds = await ctx.db.mustahik.findMany({
+      const existingIds = await ctx.db.zakatDistribution.findMany({
         where: {
           id: {
             in: input,
@@ -222,16 +203,16 @@ export const mustahikRouter = createTRPCRouter({
         },
       });
 
-      const existingIdSet = new Set(existingIds.map((mustahik) => mustahik.id));
+      const existingIdSet = new Set(existingIds.map((record) => record.id));
       const nonExistingIds = input.filter((id) => !existingIdSet.has(id));
 
       if (nonExistingIds.length > 0) {
         throw new Error(
-          `Kesalahan: Mustahik dengan id ${nonExistingIds.join(", ")} tidak ditemukan`,
+          `Kesalahan: Distribusi Zakat dengan id ${nonExistingIds.join(", ")} tidak ditemukan`,
         );
       }
 
-      await ctx.db.mustahik.deleteMany({
+      await ctx.db.zakatDistribution.deleteMany({
         where: {
           id: {
             in: input,

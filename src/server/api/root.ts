@@ -6,6 +6,7 @@ import { mustahikRouter } from "./routers/mustahik";
 import { mustahikCategoryRouter } from "./routers/mustahik-category";
 import { zakatPeriodRouter } from "./routers/zakat-period";
 import { zakatRecordRouter } from "./routers/zakat-record";
+import { zakatDistributionRouter } from "./routers/zakat-distribution";
 
 /**
  * This is the primary router for your server.
@@ -20,6 +21,7 @@ export const appRouter = createTRPCRouter({
   mustahikCategory: mustahikCategoryRouter,
   zakatPeriod: zakatPeriodRouter,
   zakatRecord: zakatRecordRouter,
+  zakatDistribution: zakatDistributionRouter
 });
 
 // export type definition of API
