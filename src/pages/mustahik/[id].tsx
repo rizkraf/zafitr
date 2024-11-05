@@ -33,7 +33,11 @@ import PhoneInput from "react-phone-number-input/input";
 import { useRouter } from "next/router";
 import { api } from "~/utils/api";
 import { useToast } from "~/hooks/use-toast";
-import {Loading} from "~/components/loading";
+import { Loading } from "~/components/loading";
+import { useDebounce } from "use-debounce";
+import type { RowSelectionState, SortingState } from "@tanstack/react-table";
+import { DataTable } from "~/components/data-table";
+import { columnsZakatDistributions } from "~/components/columns/mustahik";
 
 const formSchema = z.object({
   name: z.string().min(1, {
@@ -57,6 +61,16 @@ const formSchema = z.object({
 const DetailMustahik: NextPageWithLayout = () => {
   const router = useRouter();
   const { toast } = useToast();
+  const [search, setSearch] = useState("");
+  const [searchDebounce] = useDebounce(search, 500);
+  const [sorting, setSorting] = useState<SortingState>([
+    { id: "dateDistribution", desc: false },
+  ]);
+  const [pagination, setPagination] = useState({
+    pageIndex: 0,
+    pageSize: 10,
+  });
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const { data, refetch, isFetching } = api.mustahik.getDetail.useQuery(
     router.query.id as string,
   );
@@ -82,6 +96,14 @@ const DetailMustahik: NextPageWithLayout = () => {
       address: data?.data?.address ?? "",
     },
   });
+
+  const { data: dataZakat, isFetching: isFetchingZakat } =
+    api.mustahik.getZakatDistributions.useQuery({
+      id: router.query.id as string,
+      pagination,
+      search: searchDebounce,
+      sorting,
+    });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     mutate({
@@ -292,6 +314,29 @@ const DetailMustahik: NextPageWithLayout = () => {
                 )}
               </form>
             </Form>
+          </div>
+        )}
+        <h2 className="mt-4 scroll-m-20 text-3xl font-semibold tracking-tight">
+          Histori Distribusi Zakat
+        </h2>
+        {isFetchingZakat ? (
+          <Loading>Loading...</Loading>
+        ) : (
+          <div className="container mx-auto">
+            <DataTable
+              columns={columnsZakatDistributions}
+              data={dataZakat?.data ?? []}
+              pagination={pagination}
+              setPagination={setPagination}
+              pageCount={dataZakat?.meta.totalPage ?? 0}
+              sorting={sorting}
+              setSorting={setSorting}
+              rowSelection={rowSelection}
+              setRowSelection={setRowSelection}
+              search={search}
+              setSearch={setSearch}
+              searchPlaceholder="Cari Distribusi Zakat"
+            />
           </div>
         )}
       </div>

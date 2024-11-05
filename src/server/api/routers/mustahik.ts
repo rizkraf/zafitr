@@ -243,9 +243,99 @@ export const mustahikRouter = createTRPCRouter({
         data: null,
       };
     }),
+  getZakatDistributions: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        pagination: z
+          .object({
+            pageIndex: z.number().optional(),
+            pageSize: z.number().optional(),
+          })
+          .optional(),
+        search: z.string().optional(),
+        sorting: z.array(
+          z.object({
+            id: z.string(),
+            desc: z.boolean(),
+          }),
+        ),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const list = await ctx.db.zakatDistribution.findMany({
+        where: {
+          mustahikId: input.id,
+          OR: [
+            {
+              transactionNumber: {
+                contains: input.search,
+                mode: "insensitive",
+              },
+            },
+            {
+              period: {
+                name: {
+                  contains: input.search,
+                  mode: "insensitive",
+                },
+              },
+            },
+            {
+              zakatRecord: {
+                transactionNumber: {
+                  contains: input.search,
+                  mode: "insensitive",
+                },
+              },
+            },
+          ],
+        },
+        orderBy: input.sorting.map((sort) => {
+          const [relation, field] = sort.id.split(".") as [string, string];
+          return field
+            ? { [relation]: { [field]: sort.desc ? "desc" : "asc" } }
+            : { [sort.id]: sort.desc ? "desc" : "asc" };
+        }),
+        skip:
+          ((input.pagination?.pageIndex ?? 1) - 1 + 1) * // Added +1 here
+          (input.pagination?.pageSize ?? 10),
+        take: input.pagination?.pageSize ?? 10,
+        select: {
+          id: true,
+          transactionNumber: true,
+          mustahik: true,
+          zakatRecord: true,
+          period: true,
+          amount: true,
+          dateDistribution: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+      });
+
+      return {
+        data: list,
+        meta: {
+          total: await ctx.db.zakatDistribution.count({
+            where: {
+              mustahikId: input.id,
+            },
+          }),
+          currentPage: (input.pagination?.pageIndex ?? 1) + 1, // Added +1 here
+          totalPage: Math.ceil(
+            (await ctx.db.zakatDistribution.count({
+              where: {
+                mustahikId: input.id,
+              },
+            })) / (input.pagination?.pageSize ?? 10),
+          ),
+        },
+      };
+    }),
   total: protectedProcedure.query(async ({ ctx }) => {
     const total = await ctx.db.mustahik.count();
 
     return total;
-  })
+  }),
 });

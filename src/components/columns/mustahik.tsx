@@ -11,6 +11,7 @@ import { DataTableRowBody } from "~/components/data-table-row-body";
 import { Button } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
 import Link from "next/link";
+import { type TZakatDistribution } from "./distribusi";
 
 export const MustahikSchema = z.object({
   id: z.string(),
@@ -60,7 +61,9 @@ export const columns: ColumnDef<TMustahik>[] = [
     ),
     cell: ({ row }) => (
       <Button variant="link" className="px-0" asChild>
-        <Link href={`/mustahik/${row.original.id}`}>{row.getValue("name")}</Link>
+        <Link href={`/mustahik/${row.original.id}`}>
+          {row.getValue("name")}
+        </Link>
       </Button>
     ),
   },
@@ -91,6 +94,91 @@ export const columns: ColumnDef<TMustahik>[] = [
       <DataTableColumnHeader column={column} title="Alamat" />
     ),
     cell: ({ row }) => <DataTableRowBody row={row} value="address" />,
+  },
+  {
+    accessorKey: "createdAt",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Dibuat" />
+    ),
+    cell: ({ row }) => {
+      const date = new Date(row.getValue("createdAt"));
+      const formatted = dayjs(date).format("DD MMM YYYY HH:mm:ss");
+
+      return <div>{formatted}</div>;
+    },
+  },
+  {
+    accessorKey: "updatedAt",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Diperbarui" />
+    ),
+    cell: ({ row }) => {
+      const date = new Date(row.getValue("updatedAt"));
+      const formatted = dayjs(date).format("DD MMM YYYY HH:mm:ss");
+
+      return <div>{formatted}</div>;
+    },
+  },
+];
+
+export const columnsZakatDistributions: ColumnDef<TZakatDistribution>[] = [
+  {
+    accessorKey: "transactionNumber",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="No. Transaksi" />
+    ),
+    cell: ({ row }) => (
+      <Button variant="link" className="px-0" asChild>
+        <Link href={`/distribusi/${row.original.id}`}>
+          {row.getValue("transactionNumber")}
+        </Link>
+      </Button>
+    ),
+  },
+  {
+    accessorFn: (data) => data.zakatRecord.transactionNumber,
+    id: "zakatRecord.transactionNumber",
+    header: ({ column }) => (
+      <DataTableColumnHeader
+        column={column}
+        title="No. Transaksi Penerimaan Zakat"
+      />
+    ),
+    cell: ({ row }) => (
+      <Button variant="link" className="px-0" asChild>
+        <Link href={`/penerimaan/${row.original.zakatRecord.id}`}>
+          {row.getValue("zakatRecord.transactionNumber")}
+        </Link>
+      </Button>
+    ),
+  },
+  {
+    accessorFn: (data) => data.period.name,
+    id: "period.name",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Periode Zakat" />
+    ),
+  },
+  {
+    accessorKey: "amount",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Besaran Penyaluran Zakat" />
+    ),
+    cell: ({ row }) => (
+      <DataTableRowBody row={row} value="amount" isFormatedAmount />
+    ),
+  },
+  {
+    accessorKey: "dateDistribution",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Tanggal Distribusi" />
+    ),
+    cell: ({ row }) => {
+      const date = new Date(row.getValue("dateDistribution"));
+      const formatted = dayjs(date).format("DD MMM YYYY");
+
+      return <div>{formatted}</div>;
+    },
   },
   {
     accessorKey: "createdAt",
