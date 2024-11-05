@@ -46,6 +46,9 @@ const formSchema = z.object({
     message: "Jumlah harus diisi",
   }),
   dateDistribution: z.date(),
+  periodId: z.string().min(1, {
+    message: "Periode harus diisi",
+  }),
 });
 
 import { maskitoCurrency } from "~/utils/mask";
@@ -70,12 +73,14 @@ const DetailZakatDistribution: NextPageWithLayout = () => {
       mustahikId: "",
       amount: "",
       dateDistribution: new Date(),
+      periodId: "",
     },
     values: {
       zakatRecordId: data?.data?.zakatRecord.id ?? "",
       mustahikId: data?.data?.mustahik.id ?? "",
       amount: data?.data?.amount.toString() ?? "",
       dateDistribution: data?.data?.dateDistribution ?? new Date(),
+      periodId: data?.data?.period.id ?? "",
     },
   });
 
@@ -109,6 +114,13 @@ const DetailZakatDistribution: NextPageWithLayout = () => {
     mustahik?.data?.map((msthk) => ({
       label: msthk.name,
       value: msthk.id,
+    })) ?? [];
+
+  const period = api.zakatPeriod.getAll.useQuery().data;
+  const periodOptions: { label: string; value: string }[] =
+    period?.data?.map((prd) => ({
+      label: prd.name,
+      value: prd.id,
     })) ?? [];
 
   useEffect(() => {
@@ -218,6 +230,31 @@ const DetailZakatDistribution: NextPageWithLayout = () => {
                         ) : (
                           <p className="leading-7 [&:not(:first-child)]:mt-6">
                             {data?.data?.mustahik.name}
+                          </p>
+                        )}
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="periodId"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col">
+                      <FormLabel>Periode</FormLabel>
+                      <FormControl>
+                        {isEdit ? (
+                          <Combobox
+                            form={form}
+                            field={field}
+                            name="periodId"
+                            options={periodOptions}
+                            selectPlaceHolder="Pilih Periode..."
+                          />
+                        ) : (
+                          <p className="leading-7 [&:not(:first-child)]:mt-6">
+                            {data?.data?.period.name}
                           </p>
                         )}
                       </FormControl>

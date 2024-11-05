@@ -8,10 +8,64 @@ import {
 import { Separator } from "~/components/ui/separator";
 import { SidebarTrigger } from "~/components/ui/sidebar";
 import type { NextPageWithLayout } from "./_app";
-import { type ReactElement } from "react";
+import { useState, type ReactElement } from "react";
 import Head from "next/head";
+import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
+import { api } from "~/utils/api";
+import { formatedCurrency } from "~/utils/parse";
+import { Skeleton } from "~/components/ui/skeleton";
+import {
+  type ChartConfig,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "~/components/ui/chart";
+import { Bar, BarChart, LabelList, XAxis, YAxis } from "recharts";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "~/components/ui/select";
 
 const Home: NextPageWithLayout = () => {
+  const [idPeriod, setIdPeriod] = useState("");
+
+  const { data: dataRecord, isFetching: isFetchingRecord } =
+    api.zakatRecord.totalAmount.useQuery();
+  const { data: dataDistribution, isFetching: isFetchingDistribution } =
+    api.zakatDistribution.totalAmount.useQuery();
+  const { data: dataMuzakki, isFetching: isFetchingMuzakki } =
+    api.muzakki.total.useQuery();
+  const { data: dataMustahik, isFetching: isFetchingMustahik } =
+    api.mustahik.total.useQuery();
+
+  const period = api.zakatPeriod.getAll.useQuery().data;
+
+  const { data: chartData } =
+    api.statistic.getRecordAndDistributionStatisticByPeriod.useQuery({
+      periodId: idPeriod,
+    });
+
+  const chartConfig = {
+    amount: {
+      label: "Jumlah",
+    },
+    record: {
+      label: "Penerimaan",
+      color: "hsl(var(--chart-1))",
+    },
+    distribution: {
+      label: "Distribusi",
+      color: "hsl(var(--chart-2))",
+    },
+    label: {
+      label: "Label",
+      color: "hsl(var(--background))",
+    },
+  } satisfies ChartConfig;
+
   return (
     <>
       <Head>
@@ -25,21 +79,158 @@ const Home: NextPageWithLayout = () => {
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem className="hidden md:block">
-                <BreadcrumbLink href="#">
-                  Beranda
-                </BreadcrumbLink>
+                <BreadcrumbLink href="#">Beranda</BreadcrumbLink>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
         </div>
       </header>
       <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-        <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-          <div className="aspect-video rounded-xl bg-muted/50" />
-          <div className="aspect-video rounded-xl bg-muted/50" />
-          <div className="aspect-video rounded-xl bg-muted/50" />
+        <div className="grid auto-rows-min gap-4 md:grid-cols-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Jumlah Penerimaan Zakat</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {isFetchingRecord ? (
+                <Skeleton className="h-7 rounded-sm" />
+              ) : (
+                <h4 className="scroll-m-20 text-xl font-semibold tracking-tight">
+                  {formatedCurrency(dataRecord ?? 0)}
+                </h4>
+              )}
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>Jumlah Distribusi Zakat</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {isFetchingDistribution ? (
+                <Skeleton className="h-7 rounded-sm" />
+              ) : (
+                <h4 className="scroll-m-20 text-xl font-semibold tracking-tight">
+                  {formatedCurrency(dataDistribution ?? 0)}
+                </h4>
+              )}
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>Jumlah Muzakki</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {isFetchingMuzakki ? (
+                <Skeleton className="h-7 rounded-sm" />
+              ) : (
+                <h4 className="scroll-m-20 text-xl font-semibold tracking-tight">
+                  {`${dataMuzakki} orang`}
+                </h4>
+              )}
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>Jumlah Mustahik</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {isFetchingMustahik ? (
+                <Skeleton className="h-7 rounded-sm" />
+              ) : (
+                <h4 className="scroll-m-20 text-xl font-semibold tracking-tight">
+                  {`${dataMustahik} orang`}
+                </h4>
+              )}
+            </CardContent>
+          </Card>
         </div>
-        <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min" />
+        <div className="min-h-[100vh] md:min-h-min">
+          <Card>
+            <CardHeader className="flex gap-2 space-y-0 border-b py-5 sm:flex-row sm:items-center">
+              <div className="grid flex-1 gap-1">
+                <CardTitle>Statistik Penerimaan dan Distribusi Zakat</CardTitle>
+              </div>
+              <Select value={idPeriod} onValueChange={setIdPeriod}>
+                <SelectTrigger
+                  className="w-[160px] rounded-lg sm:ml-auto"
+                  aria-label="Select a value"
+                >
+                  <SelectValue placeholder="Pilih periode..." />
+                </SelectTrigger>
+                <SelectContent className="rounded-xl">
+                  {period?.data.map((prd) => (
+                    <SelectItem
+                      key={prd.id}
+                      value={prd.id}
+                      className="rounded-lg"
+                    >
+                      {prd.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </CardHeader>
+            <CardContent>
+              <ChartContainer config={chartConfig}>
+                <BarChart
+                  accessibilityLayer
+                  data={chartData}
+                  layout="vertical"
+                  margin={{
+                    left: 0,
+                  }}
+                >
+                  <YAxis
+                    dataKey="zakat"
+                    type="category"
+                    tickLine={false}
+                    tickMargin={10}
+                    axisLine={false}
+                    tickFormatter={(value: string) => value.slice(0, 3)}
+                    hide
+                  />
+                  <XAxis dataKey="amount" type="number" hide />
+                  <ChartTooltip
+                    cursor={false}
+                    content={
+                      <ChartTooltipContent
+                        indicator="line"
+                        formatter={(value, name) => (
+                          <div className="flex min-w-[130px] items-center text-xs text-muted-foreground">
+                            {chartConfig[name as keyof typeof chartConfig]
+                              ?.label || name}
+                            <div className="ml-auto flex items-baseline gap-0.5 font-mono font-medium tabular-nums text-foreground">
+                              {formatedCurrency(Number(value))}
+                            </div>
+                          </div>
+                        )}
+                      />
+                    }
+                  />
+                  <Bar dataKey="amount" layout="vertical" radius={5}>
+                    <LabelList
+                      dataKey="zakat"
+                      position="insideLeft"
+                      offset={8}
+                      className="fill-[--color-label]"
+                      fontSize={14}
+                      fontWeight={500}
+                    />
+                    <LabelList
+                      dataKey="amount"
+                      position="insideRight"
+                      offset={8}
+                      className="fill-[--color-label]"
+                      fontSize={14}
+                      fontWeight={500}
+                      formatter={formatedCurrency}
+                    />
+                  </Bar>
+                </BarChart>
+              </ChartContainer>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </>
   );
@@ -50,84 +241,3 @@ Home.getLayout = function getLayout(page: ReactElement) {
 };
 
 export default Home;
-
-// import { signIn, signOut, useSession } from "next-auth/react";
-// import Head from "next/head";
-// import Link from "next/link";
-
-// import { api } from "~/utils/api";
-
-// export default function Home() {
-//   const hello = api.post.hello.useQuery({ text: "from tRPC" });
-
-//   return (
-//     <>
-//       <Head>
-//         <title>Create T3 App</title>
-//         <meta name="description" content="Generated by create-t3-app" />
-//         <link rel="icon" href="/favicon.ico" />
-//       </Head>
-//       <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
-//         <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16">
-//           <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]">
-//             Create <span className="text-[hsl(280,100%,70%)]">T3</span> App
-//           </h1>
-//           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8">
-//             <Link
-//               className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
-//               href="https://create.t3.gg/en/usage/first-steps"
-//               target="_blank"
-//             >
-//               <h3 className="text-2xl font-bold">First Steps →</h3>
-//               <div className="text-lg">
-//                 Just the basics - Everything you need to know to set up your
-//                 database and authentication.
-//               </div>
-//             </Link>
-//             <Link
-//               className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
-//               href="https://create.t3.gg/en/introduction"
-//               target="_blank"
-//             >
-//               <h3 className="text-2xl font-bold">Documentation →</h3>
-//               <div className="text-lg">
-//                 Learn more about Create T3 App, the libraries it uses, and how
-//                 to deploy it.
-//               </div>
-//             </Link>
-//           </div>
-//           <div className="flex flex-col items-center gap-2">
-//             <p className="text-2xl text-white">
-//               {hello.data ? hello.data.greeting : "Loading tRPC query..."}
-//             </p>
-//             <AuthShowcase />
-//           </div>
-//         </div>
-//       </main>
-//     </>
-//   );
-// }
-
-// function AuthShowcase() {
-//   const { data: sessionData } = useSession();
-
-//   const { data: secretMessage } = api.post.getSecretMessage.useQuery(
-//     undefined, // no input
-//     { enabled: sessionData?.user !== undefined }
-//   );
-
-//   return (
-//     <div className="flex flex-col items-center justify-center gap-4">
-//       <p className="text-center text-2xl text-white">
-//         {sessionData && <span>Logged in as {sessionData.user?.name}</span>}
-//         {secretMessage && <span> - {secretMessage}</span>}
-//       </p>
-//       <button
-//         className="rounded-full bg-white/10 px-10 py-3 font-semibold text-white no-underline transition hover:bg-white/20"
-//         onClick={sessionData ? () => void signOut() : () => void signIn()}
-//       >
-//         {sessionData ? "Sign out" : "Sign in"}
-//       </button>
-//     </div>
-//   );
-// }

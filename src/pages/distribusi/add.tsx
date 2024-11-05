@@ -45,6 +45,9 @@ const formSchema = z.object({
     message: "Jumlah harus diisi",
   }),
   dateDistribution: z.date(),
+  periodId: z.string().min(1, {
+    message: "Periode harus diisi",
+  }),
 });
 
 import { maskitoCurrency } from "~/utils/mask";
@@ -65,6 +68,7 @@ const AddZakatDistribution: NextPageWithLayout = () => {
       mustahikId: "",
       amount: "",
       dateDistribution: new Date(),
+      periodId: "",
     },
   });
 
@@ -89,6 +93,13 @@ const AddZakatDistribution: NextPageWithLayout = () => {
     zakatRecord?.data?.map((record) => ({
       label: `${record.transactionNumber} - ${formatedCurrency(record.amount)}`,
       value: record.id,
+    })) ?? [];
+
+  const period = api.zakatPeriod.getAll.useQuery().data;
+  const periodOptions: { label: string; value: string }[] =
+    period?.data?.map((prd) => ({
+      label: prd.name,
+      value: prd.id,
     })) ?? [];
 
   useEffect(() => {
@@ -183,6 +194,25 @@ const AddZakatDistribution: NextPageWithLayout = () => {
                         name="mustahikId"
                         options={mustahikOptions}
                         selectPlaceHolder="Pilih Mustahik..."
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="periodId"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col">
+                    <FormLabel>Periode</FormLabel>
+                    <FormControl>
+                      <Combobox
+                        form={form}
+                        field={field}
+                        name="periodId"
+                        options={periodOptions}
+                        selectPlaceHolder="Pilih Periode..."
                       />
                     </FormControl>
                     <FormMessage />

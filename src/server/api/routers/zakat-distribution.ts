@@ -56,6 +56,7 @@ export const zakatDistributionRouter = createTRPCRouter({
           transactionNumber: true,
           zakatRecord: true,
           mustahik: true,
+          period: true,
           amount: true,
           dateDistribution: true,
           createdAt: true,
@@ -88,6 +89,7 @@ export const zakatDistributionRouter = createTRPCRouter({
           zakatRecord: true,
           mustahik: true,
           amount: true,
+          period: true,
           dateDistribution: true,
           createdAt: true,
           updatedAt: true,
@@ -105,6 +107,7 @@ export const zakatDistributionRouter = createTRPCRouter({
         zakatRecordId: z.string(),
         amount: z.number(),
         dateDistribution: z.date(),
+        periodId: z.string()
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -127,11 +130,13 @@ export const zakatDistributionRouter = createTRPCRouter({
           zakatRecordId: input.zakatRecordId,
           amount: input.amount,
           dateDistribution: input.dateDistribution,
+          zakatPeriod: input.periodId,
         },
         select: {
           id: true,
           transactionNumber: true,
           mustahik: true,
+          period: true,
           amount: true,
           dateDistribution: true,
           createdAt: true,
@@ -151,6 +156,7 @@ export const zakatDistributionRouter = createTRPCRouter({
         zakatRecordId: z.string(),
         amount: z.number(),
         dateDistribution: z.date(),
+        periodId: z.string()
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -171,6 +177,7 @@ export const zakatDistributionRouter = createTRPCRouter({
         data: {
           mustahikId: input.mustahikId,
           zakatRecordId: input.zakatRecordId,
+          zakatPeriod: input.periodId,
           amount: input.amount,
           dateDistribution: input.dateDistribution,
         },
@@ -178,6 +185,7 @@ export const zakatDistributionRouter = createTRPCRouter({
           id: true,
           transactionNumber: true,
           mustahik: true,
+          period: true,
           amount: true,
           dateDistribution: true,
           createdAt: true,
@@ -224,4 +232,13 @@ export const zakatDistributionRouter = createTRPCRouter({
         data: null,
       };
     }),
+  totalAmount: protectedProcedure.query(async ({ ctx }) => {
+    const total = await ctx.db.zakatDistribution.aggregate({
+      _sum: {
+        amount: true,
+      },
+    });
+
+    return total._sum.amount ?? 0;
+  }),
 });

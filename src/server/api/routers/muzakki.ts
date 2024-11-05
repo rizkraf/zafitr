@@ -289,10 +289,10 @@ export const muzakkiRouter = createTRPCRouter({
                 name: {
                   contains: input.search,
                   mode: "insensitive",
-                }
+                },
               },
             },
-          ]
+          ],
         },
         orderBy: input.sorting.map((sort) => {
           const [relation, field] = sort.id.split(".") as [string, string];
@@ -337,4 +337,9 @@ export const muzakkiRouter = createTRPCRouter({
         },
       };
     }),
+  total: protectedProcedure.query(async ({ ctx }) => {
+    const total = await ctx.db.muzakki.count();
+
+    return total;
+  }),
 });

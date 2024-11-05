@@ -243,4 +243,9 @@ export const mustahikRouter = createTRPCRouter({
         data: null,
       };
     }),
+  total: protectedProcedure.query(async ({ ctx }) => {
+    const total = await ctx.db.mustahik.count();
+
+    return total;
+  })
 });

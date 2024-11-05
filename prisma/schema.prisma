@@ -98,6 +98,7 @@ model ZakatDistribution {
     transactionNumber String   @unique
     mustahikId        String
     zakatRecordId     String
+    zakatPeriod       String
     amount            Float
     dateDistribution  DateTime
     createdAt         DateTime @default(now())
@@ -105,6 +106,7 @@ model ZakatDistribution {
 
     mustahik    Mustahik    @relation(fields: [mustahikId], references: [id])
     zakatRecord ZakatRecord @relation(fields: [zakatRecordId], references: [id])
+    period      ZakatPeriod @relation(fields: [zakatPeriod], references: [id])
 }
 
 model MuzakkiCategory {
@@ -132,4 +134,5 @@ model ZakatPeriod {
     updatedAt DateTime @updatedAt
 
     zakatRecords ZakatRecord[]
+    zakatDistributions ZakatDistribution[]
 }

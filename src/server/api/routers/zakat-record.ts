@@ -268,4 +268,13 @@ export const zakatRecordRouter = createTRPCRouter({
         data: null,
       };
     }),
+  totalAmount: protectedProcedure.query(async ({ ctx }) => {
+    const total = await ctx.db.zakatRecord.aggregate({
+      _sum: {
+        amount: true,
+      },
+    });
+
+    return total._sum.amount ?? 0;
+  })
 });

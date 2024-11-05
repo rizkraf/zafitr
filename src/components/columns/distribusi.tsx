@@ -22,6 +22,9 @@ export const MuzakkiSchema = z.object({
     id: z.string(),
     transactionNumber: z.string(),
   }),
+  period: z.object({
+    name: z.string(),
+  }),
   amount: z.number(),
   dateDistribution: z.date(),
   createdAt: z.date(),
@@ -88,6 +91,13 @@ export const columns: ColumnDef<TMuzakki>[] = [
     id: "mustahik.name",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Mustahik" />
+    ),
+  },
+  {
+    accessorFn: (data) => data.period.name,
+    id: "period.name",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Periode Zakat" />
     ),
   },
   {
