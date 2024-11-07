@@ -8,6 +8,7 @@ import { zakatPeriodRouter } from "./routers/zakat-period";
 import { zakatRecordRouter } from "./routers/zakat-record";
 import { zakatDistributionRouter } from "./routers/zakat-distribution";
 import { statisticRouter } from "./routers/statistic";
+import { userRouter } from "./routers/user";
 
 /**
  * This is the primary router for your server.
@@ -24,6 +25,7 @@ export const appRouter = createTRPCRouter({
   zakatRecord: zakatRecordRouter,
   zakatDistribution: zakatDistributionRouter,
   statistic: statisticRouter,
+  user: userRouter,
 });
 
 // export type definition of API

@@ -16,6 +16,7 @@ import {
   useSidebar,
 } from "~/components/ui/sidebar";
 import { signOut, useSession } from "next-auth/react";
+import Link from "next/link";
 
 export function NavUser() {
   const { data: sessionData } = useSession();
@@ -65,9 +66,11 @@ export function NavUser() {
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <Settings />
-                Pengaturan
+              <DropdownMenuItem asChild>
+                <Link href="/pengaturan">
+                  <Settings />
+                  Pengaturan
+                </Link>
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
