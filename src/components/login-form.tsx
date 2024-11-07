@@ -1,5 +1,3 @@
-import Link from "next/link";
-
 import { Button } from "~/components/ui/button";
 import {
   Card,
@@ -63,12 +61,6 @@ export function LoginForm({
             <div className="grid gap-2">
               <div className="flex items-center">
                 <Label htmlFor="password">Kata Sandi</Label>
-                <Link
-                  href="#"
-                  className="ml-auto inline-block text-sm underline"
-                >
-                  Lupa kata sandi?
-                </Link>
               </div>
               <Input
                 id="password"
