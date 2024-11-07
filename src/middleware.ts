@@ -19,5 +19,7 @@ export const config = {
     "/kategori/:path*",
     "/periode/:path*",
     "/penerimaan/:path*",
+    "/distribusi/:path*",
+    "/pengaturan/:path*",
   ],
 };

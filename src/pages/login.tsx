@@ -4,6 +4,7 @@ import { signIn } from "next-auth/react";
 import { LoginForm } from "~/components/login-form";
 import { type ChangeEvent, type FormEvent, useState } from "react";
 import { useRouter } from "next/router";
+import Head from "next/head";
 
 type LoginInput = {
   username: string;
@@ -53,15 +54,21 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex h-screen w-full items-center justify-center px-4">
-      <LoginForm
-        onChange={handleChange}
-        onSubmit={handleSubmit}
-        username={loginInput.username}
-        password={loginInput.password}
-        isLoading={isLoading}
-        error={error}
-      />
-    </div>
+    <>
+      <Head>
+        <title>Masuk</title>
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
+      <div className="flex h-screen w-full items-center justify-center px-4">
+        <LoginForm
+          onChange={handleChange}
+          onSubmit={handleSubmit}
+          username={loginInput.username}
+          password={loginInput.password}
+          isLoading={isLoading}
+          error={error}
+        />
+      </div>
+    </>
   );
 }
