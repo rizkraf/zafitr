@@ -54,11 +54,11 @@ const Home: NextPageWithLayout = () => {
     },
     record: {
       label: "Penerimaan",
-      color: "hsl(var(--chart-1))",
+      color: "hsl(var(--chart-2))",
     },
     distribution: {
       label: "Distribusi",
-      color: "hsl(var(--chart-2))",
+      color: "hsl(var(--chart-3))",
     },
     label: {
       label: "Label",
